@@ -28,6 +28,11 @@
             app:defaultValue="false"
             app:title="@string/preferences_pure_black_night_mode" />
         <SwitchPreference
+            app:key="pref_material_you_color"
+            app:defaultValue="false"
+            app:title="@string/preferences_material_you_title"
+            app:summary="@string/preferences_material_you_summary" />
+        <SwitchPreference
             app:key="pref_real_event_colors"
             app:defaultValue="false"
             app:title="@string/preferences_real_event_colors" />

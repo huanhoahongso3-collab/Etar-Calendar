@@ -66,6 +66,7 @@ class GeneralPreferences : PreferenceFragmentCompat(),
     private lateinit var themePref: ListPreference
     private lateinit var realEventColors: SwitchPreference
     private lateinit var pureBlackNightModePref: SwitchPreference
+    private lateinit var materialYouColorPref: SwitchPreference
     private lateinit var doNotCheckBatteryOptimizationPref: SwitchPreference
     private lateinit var defaultStartPref: ListPreference
     private lateinit var hideDeclinedPref: SwitchPreference
@@ -112,6 +113,7 @@ class GeneralPreferences : PreferenceFragmentCompat(),
         themePref = preferenceScreen.findPreference(KEY_THEME_PREF)!!
         realEventColors = preferenceScreen.findPreference(KEY_REAL_EVENT_COLORS)!!
         pureBlackNightModePref = preferenceScreen.findPreference(KEY_PURE_BLACK_NIGHT_MODE)!!
+        materialYouColorPref = preferenceScreen.findPreference(KEY_MATERIAL_YOU_COLOR)!!
         doNotCheckBatteryOptimizationPref = preferenceScreen.findPreference(KEY_DO_NOT_CHECK_BATTERY_OPTIMIZATION)!!
         defaultStartPref = preferenceScreen.findPreference(KEY_DEFAULT_START)!!
         hideDeclinedPref = preferenceScreen.findPreference(KEY_HIDE_DECLINED)!!
@@ -156,6 +158,10 @@ class GeneralPreferences : PreferenceFragmentCompat(),
 
         if (themePref.value == "system" && !isSystemInDarkTheme(requireActivity()) || themePref.value == "light") {
             preferenceScreen.removePreferenceRecursively(KEY_PURE_BLACK_NIGHT_MODE)
+        }
+
+        if (!Utils.isMonetAvailable(requireActivity())) {
+            preferenceScreen.removePreferenceRecursively(KEY_MATERIAL_YOU_COLOR)
         }
 
         buildWeekStartEntries()
@@ -225,6 +231,7 @@ class GeneralPreferences : PreferenceFragmentCompat(),
     private fun setPreferenceListeners(listener: Preference.OnPreferenceChangeListener) {
         themePref.onPreferenceChangeListener = listener
         pureBlackNightModePref.onPreferenceChangeListener = listener
+        materialYouColorPref.onPreferenceChangeListener = listener
         doNotCheckBatteryOptimizationPref.onPreferenceChangeListener = listener
         defaultStartPref.onPreferenceChangeListener = listener
         hideDeclinedPref.onPreferenceChangeListener = listener
@@ -276,6 +283,10 @@ class GeneralPreferences : PreferenceFragmentCompat(),
             }
             KEY_REAL_EVENT_COLORS -> {
                 Utils.sendUpdateWidgetIntent(a)
+            }
+            KEY_MATERIAL_YOU_COLOR -> {
+                Utils.sendUpdateWidgetIntent(a)
+                a.recreate()
             }
         }
     }
@@ -512,6 +523,7 @@ class GeneralPreferences : PreferenceFragmentCompat(),
         const val KEY_REAL_EVENT_COLORS = "pref_real_event_colors"
         const val KEY_DO_NOT_CHECK_BATTERY_OPTIMIZATION = "pref_do_not_check_battery_optimization"
         const val KEY_PURE_BLACK_NIGHT_MODE = "pref_pure_black_night_mode"
+        const val KEY_MATERIAL_YOU_COLOR = "pref_material_you_color"
         const val KEY_DEFAULT_START = "preferences_default_start"
         const val KEY_HIDE_DECLINED = "preferences_hide_declined"
         const val KEY_STAGGERED_DISPLAY = "preferences_staggered_display"

@@ -39,6 +39,12 @@ fun AppCompatActivity.applyTheme() {
         theme.applyStyle(R.style.OneUiAccentOverlay, true)
     }
 
+    // "Material You colors" takes precedence over the fixed One UI accent
+    // when the user has opted in and the device actually supports it.
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ThemeUtils.isMaterialYouEnabled(this)) {
+        theme.applyStyle(R.style.MaterialYouAccentOverlay, true)
+    }
+
     // Setup edge to edge
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
         setupEdgeToEdge(this)
