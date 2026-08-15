@@ -1,0 +1,58 @@
+name: OneUI Debug Release
+
+on:
+  push:
+    branches:
+      - feature/oneui-design-lib
+      - oneui
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '25'
+
+      - name: Restore Cache
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/actions/wrapper-validation@v6
+
+      - name: Build debug APK
+        env:
+          GPR_USER: ${{ secrets.USERNAME }}
+          GPR_TOKEN: ${{ secrets.TOKEN }}
+        run: ./gradlew :app:assembleDebug --stacktrace
+
+      - name: Rename APK
+        run: cp app/build/outputs/apk/debug/app-debug.apk debug.apk
+
+      - name: Publish to "debug" release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view debug --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release delete debug --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag
+          fi
+          gh release create debug debug.apk \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "Debug build (OneUI)" \
+            --notes "Automated debug build from ${{ github.ref_name }}@${{ github.sha }}. Always reflects the latest commit on that branch." \
+            --prerelease
