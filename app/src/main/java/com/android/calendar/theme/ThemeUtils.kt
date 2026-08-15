@@ -10,9 +10,14 @@ object ThemeUtils {
 
     private const val THEME_PREF = "pref_theme"
     private const val PURE_BLACK_NIGHT_MODE = "pref_pure_black_night_mode"
+    const val ONEUI_STYLE_PREF = "pref_oneui_style"
 
     val Context.isPureBlackModeEnabled: Boolean
         get() = Utils.getSharedPreference(this, PURE_BLACK_NIGHT_MODE, false)
+
+    @JvmStatic
+    fun isOneUiStyleEnabled(context: Context): Boolean =
+        Utils.getSharedPreference(context, ONEUI_STYLE_PREF, false)
 
     fun getTheme(context: Context): Theme {
         val theme = Utils.getSharedPreference(

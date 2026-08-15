@@ -48,6 +48,7 @@ import androidx.core.content.ContextCompat;
 import com.android.calendar.Event;
 import com.android.calendar.LunarUtils;
 import com.android.calendar.VietnameseLunarUtils;
+import com.android.calendar.theme.ThemeUtils;
 import com.android.calendar.Utils;
 import com.android.calendar.settings.ViewDetailsPreferences;
 import com.android.calendar.calendarcommon2.Time;
@@ -561,7 +562,7 @@ public class MonthWeekEventsView extends SimpleWeekView {
             p.setColor(mMonthBGOtherColor);
             canvas.drawRect(r, p);
         }
-        if (mHasToday) {
+        if (mHasToday && !ThemeUtils.isOneUiStyleEnabled(mContext)) {
             int selectedColor = ContextCompat.getColor(mContext, DynamicThemeKt.getColorId(DynamicThemeKt.getPrimaryColor(mContext)));
 
             if (Utils.getSharedPreference(mContext, "pref_theme", "light").equals("light")) {
@@ -622,9 +623,13 @@ public class MonthWeekEventsView extends SimpleWeekView {
         Time time = new Time(mTimeZone);
         time.setJulianDay(julianMonday);
 
+        boolean oneUiStyle = ThemeUtils.isOneUiStyleEnabled(getContext());
         for (; i < numCount; i++) {
-            if (mHasToday && todayIndex == i) {
-                mMonthNumPaint.setColor(mMonthNumTodayColor);
+            boolean isToday = mHasToday && todayIndex == i;
+            if (isToday) {
+                mMonthNumPaint.setColor(oneUiStyle ?
+                        ContextCompat.getColor(mContext, R.color.oneui_today_number_text) :
+                        mMonthNumTodayColor);
                 mMonthNumPaint.setFakeBoldText(isBold = true);
                 if (i + 1 < numCount) {
                     // Make sure the color will be set back on the next
@@ -636,6 +641,19 @@ public class MonthWeekEventsView extends SimpleWeekView {
                 mMonthNumPaint.setColor(isFocusMonth ? mMonthNumColor : mMonthNumOtherColor);
             }
             x = computeDayLeftPosition(i - offset) - (mSidePaddingMonthNumber);
+            if (isToday && oneUiStyle) {
+                float textWidth = mMonthNumPaint.measureText(mDayNumbers[i]);
+                float centerX = x - textWidth / 2f;
+                float centerY = y + (mMonthNumPaint.ascent() + mMonthNumPaint.descent()) / 2f;
+                float radius = mMonthNumHeight * 0.62f;
+                int savedColor = p.getColor();
+                Paint.Style savedStyle = p.getStyle();
+                p.setStyle(Paint.Style.FILL);
+                p.setColor(ContextCompat.getColor(mContext, R.color.oneui_today_circle));
+                canvas.drawCircle(centerX, centerY, radius, p);
+                p.setColor(savedColor);
+                p.setStyle(savedStyle);
+            }
             canvas.drawText(mDayNumbers[i], x, y, mMonthNumPaint);
             if (isBold) {
                 mMonthNumPaint.setFakeBoldText(isBold = false);

@@ -3,4 +3,9 @@
 
     <color name="colorSecondaryContainer">#388d7f</color>
 
+    <!-- One UI style accent (Samsung OneUI 7 signature blue, dark mode) -->
+    <color name="oneui_primary">#4DA6FF</color>
+    <color name="oneui_today_circle">#4DA6FF</color>
+    <color name="oneui_today_number_text">#0a0a0a</color>
+
 </resources>

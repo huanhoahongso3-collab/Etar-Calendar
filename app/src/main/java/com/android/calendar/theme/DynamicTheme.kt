@@ -34,6 +34,11 @@ fun AppCompatActivity.applyTheme() {
         theme.applyStyle(R.style.colorBackgroundBlack, true)
     }
 
+    // Handle the "One UI style" accent color overlay
+    if (ThemeUtils.isOneUiStyleEnabled(this)) {
+        theme.applyStyle(R.style.OneUiAccentOverlay, true)
+    }
+
     // Setup edge to edge
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
         setupEdgeToEdge(this)

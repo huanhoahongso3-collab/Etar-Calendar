@@ -308,6 +308,8 @@
     <string name="display_options">Tuỳ chọn hiển thị</string>
     <string name="default_start_title">Hiển thị mặc định</string>
     <string name="preferences_pure_black_night_mode">Chế độ ban đêm đen thuần tuý</string>
+    <string name="preferences_oneui_style_title">Giao diện One UI</string>
+    <string name="preferences_oneui_style_summary">Giao diện giống với Lịch One UI của Samsung</string>
     <string name="preferences_color_pick">Màu chính</string>
     <string name="preferences_color">Màu chính</string>
     <string name="preferences_black_theme">Đen</string>

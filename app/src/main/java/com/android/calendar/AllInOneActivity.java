@@ -92,7 +92,9 @@ import com.android.calendar.calendarcommon2.Time;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
+import android.content.res.ColorStateList;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.android.calendar.theme.ThemeUtils;
 import com.google.android.material.navigation.NavigationView;
 
 import java.io.File;
@@ -521,6 +523,16 @@ public class AllInOneActivity extends AbstractCalendarActivity implements EventH
     }
 
     public void setupFloatingActionButton() {
+        if (ThemeUtils.isOneUiStyleEnabled(this)) {
+            // One UI's FAB is a rounded square rather than a circle.
+            float radius = getResources().getDisplayMetrics().density * 18;
+            mFab.setShapeAppearanceModel(
+                    mFab.getShapeAppearanceModel().toBuilder()
+                            .setAllCornerSizes(radius)
+                            .build());
+            mFab.setBackgroundTintList(
+                    ColorStateList.valueOf(ContextCompat.getColor(this, R.color.oneui_primary)));
+        }
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

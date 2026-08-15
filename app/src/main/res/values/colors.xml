@@ -26,6 +26,11 @@
     <color name="titleTextColor">@android:color/white</color>
     <color name="app_bar">@color/colorPrimary</color>
 
+    <!-- One UI style accent (Samsung OneUI 7 signature blue) -->
+    <color name="oneui_primary">#0381FE</color>
+    <color name="oneui_today_circle">#0381FE</color>
+    <color name="oneui_today_number_text">#ffffff</color>
+
     <color name="pressed">#330066ff</color>
 
     <color name="selection">@android:color/holo_blue_light</color>
