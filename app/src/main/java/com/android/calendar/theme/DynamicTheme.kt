@@ -175,7 +175,10 @@ fun isSystemInDarkTheme(context: Context): Boolean {
 @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 private fun setupEdgeToEdge(activity: Activity) {
     val window = activity.window
-    val rootView = activity.window.decorView.rootView
+    // Pad the actual content root (not decorView.rootView, which sits one
+    // level above our layout and double-counts insets already handled by
+    // fitsSystemWindows="true" on our own root layouts).
+    val rootView = activity.findViewById<View>(android.R.id.content)
 
     WindowCompat.setDecorFitsSystemWindows(window, false)
     ViewCompat.setOnApplyWindowInsetsListener(
@@ -186,7 +189,10 @@ private fun setupEdgeToEdge(activity: Activity) {
                 WindowInsetsCompat.Type.displayCutout()
         )
         v.setPadding(insets.left, insets.top, insets.right, insets.bottom)
-        WindowInsetsCompat.CONSUMED
+        // Don't consume: let insets-aware descendants (SESL/Material
+        // widgets, RecyclerViews handling their own nav-bar padding) still
+        // see the real values instead of being starved to zero.
+        windowInsets
     }
 
     // Special Handling
