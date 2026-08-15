@@ -51,15 +51,24 @@
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation_view"
-        android:layout_width="wrap_content"
+        android:layout_width="300dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        android:background="@color/oui_des_drawerlayout_drawer_bg_color"
+        android:background="@drawable/oneui_drawer_background"
+        app:headerLayout="@layout/nav_header_oneui"
+        app:itemIconPadding="16dp"
+        app:itemIconSize="26dp"
         app:itemIconTint="@color/oui_des_drawerlayout_header_icon_tint"
+        app:itemTextAppearance="@style/OneUiDrawerItemText"
         app:itemTextColor="@color/oui_des_drawer_menu_item_text_color"
+        app:itemHorizontalPadding="20dp"
         app:itemRippleColor="@color/sesl_list_ripple_color_light"
         app:itemShapeFillColor="@color/oui_des_drawer_menu_item_selected_bg_color"
         app:itemShapeAppearanceOverlay="@style/OneUiDrawerItemShape"
+        app:itemShapeInsetStart="12dp"
+        app:itemShapeInsetEnd="12dp"
+        app:itemShapeInsetTop="2dp"
+        app:itemShapeInsetBottom="2dp"
         app:menu="@menu/calendar_view" />
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -519,18 +519,33 @@ public class AllInOneActivity extends AbstractCalendarActivity implements EventH
 
     public void setupNavDrawer() {
         mNavigationView.setNavigationItemSelectedListener(this);
+        View header = mNavigationView.getHeaderView(0);
+        if (header != null) {
+            View settingsButton = header.findViewById(R.id.nav_header_settings_button);
+            if (settingsButton != null) {
+                settingsButton.setOnClickListener(v -> {
+                    mDrawerLayout.closeDrawers();
+                    mController.sendEvent(this, EventType.LAUNCH_SETTINGS, null, null, 0, 0);
+                });
+            }
+        }
         showActionBar();
     }
 
     public void setupFloatingActionButton() {
         if (ThemeUtils.isOneUiStyleEnabled(this)) {
             // One UI Calendar's FAB is a plain circle with a muted/neutral
-            // background and an accent-colored "+" icon, not a filled
-            // accent-colored shape.
+            // background and an orange "+" icon (One UI's fixed create-action
+            // color, independent of the app's accent), with a flatter/lower
+            // elevation than stock Material.
             mFab.setBackgroundTintList(
                     ColorStateList.valueOf(ContextCompat.getColor(this, R.color.oneui_fab_background)));
             mFab.setImageTintList(
-                    ColorStateList.valueOf(ContextCompat.getColor(this, R.color.oneui_primary)));
+                    ColorStateList.valueOf(ContextCompat.getColor(this, R.color.oneui_fab_icon)));
+            float elevation = getResources().getDisplayMetrics().density * 2;
+            mFab.setCompatElevation(elevation);
+            mFab.setCompatHoveredFocusedTranslationZ(elevation);
+            mFab.setCompatPressedTranslationZ(elevation);
         }
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -30,6 +30,10 @@
         <item name="cornerSize">24dp</item>
     </style>
 
+    <style name="OneUiDrawerItemText" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:textSize">17sp</item>
+    </style>
+
     <style name="CalendarAppThemeLightTeal" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>

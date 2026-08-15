@@ -31,6 +31,7 @@
     <color name="oneui_today_circle">#0381FE</color>
     <color name="oneui_today_number_text">#ffffff</color>
     <color name="oneui_fab_background">#e6e6ea</color>
+    <color name="oneui_fab_icon">#ff8a3d</color>
     <color name="oneui_weekend_text">#ff5b53</color>
 
     <color name="pressed">#330066ff</color>
