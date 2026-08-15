@@ -189,10 +189,7 @@ private fun setupEdgeToEdge(activity: Activity) {
                 WindowInsetsCompat.Type.displayCutout()
         )
         v.setPadding(insets.left, insets.top, insets.right, insets.bottom)
-        // Don't consume: let insets-aware descendants (SESL/Material
-        // widgets, RecyclerViews handling their own nav-bar padding) still
-        // see the real values instead of being starved to zero.
-        windowInsets
+        WindowInsetsCompat.CONSUMED
     }
 
     // Special Handling

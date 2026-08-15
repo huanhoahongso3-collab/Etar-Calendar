@@ -8,47 +8,49 @@
     android:fitsSystemWindows="true"
     tools:context="com.android.calendar.AllInOneActivity">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <!-- Plain RelativeLayout instead of CoordinatorLayout+AppBarLayout: SESL's
+         coordinatorlayout replacement is backed by ScrollView internally, not
+         the standard behavior-dispatching ViewGroup stock CoordinatorLayout
+         uses, so AppBarLayout's scrolling-behavior offset math breaks (the
+         AppBarLayout measures far taller than its Toolbar child, pushing all
+         content down and leaving a large blank gap). Our toolbar never
+         collapses/scrolls, so we don't need CoordinatorLayout at all. -->
+    <RelativeLayout
         android:id="@+id/coordinator_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:background="?attr/android:windowBackground"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:minHeight="?attr/actionBarSize"
+            app:menu="@menu/all_in_one_title_bar"
+            app:navigationIcon="@drawable/ic_menu_navigator" />
 
         <include
             android:id="@+id/include"
             layout="@layout/all_in_one"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
-        <com.google.android.material.appbar.AppBarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:background="?attr/android:windowBackground"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:minHeight="?attr/actionBarSize"
-                app:menu="@menu/all_in_one_title_bar"
-                app:navigationIcon="@drawable/ic_menu_navigator" />
-        </com.google.android.material.appbar.AppBarLayout>
+            android:layout_below="@id/toolbar" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/floating_action_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
             android:layout_margin="@dimen/fab_margin"
             android:backgroundTint="@color/oneui_fab_background"
             android:contentDescription="@string/event_create"
             android:src="@drawable/ic_add_event"
             app:borderWidth="0dp"
             app:elevation="2dp"
-            app:layout_anchorGravity="bottom|right|end"
             app:tint="@color/oneui_fab_icon" />
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </RelativeLayout>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation_view"

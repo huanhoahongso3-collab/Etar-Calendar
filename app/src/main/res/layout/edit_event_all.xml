@@ -162,7 +162,7 @@
 
         <Button
             android:id="@+id/start_date"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/OneUiOutlinedButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="48dp"
@@ -176,7 +176,7 @@
 
         <Button
             android:id="@+id/end_date"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/OneUiOutlinedButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="48dp"
@@ -189,7 +189,7 @@
 
         <Button
             android:id="@+id/start_time"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/OneUiOutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -204,7 +204,7 @@
 
         <Button
             android:id="@+id/end_time"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/OneUiOutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -230,7 +230,7 @@
 
         <Button
             android:id="@+id/timezone_button"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/OneUiOutlinedButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -510,7 +510,7 @@
 
         <Button
             android:id="@+id/rrule"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/OneUiOutlinedButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -559,7 +559,7 @@
 
         <Button
             android:id="@+id/reminder_add"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/OneUiOutlinedButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
