@@ -581,7 +581,8 @@ public class MonthWeekEventsView extends SimpleWeekView {
                 float right = computeDayLeftPosition(mTodayIndex + 1) - inset;
                 float top = mDaySeparatorInnerWidth + inset;
                 float bottom = mHeight - inset;
-                float corner = (right - left) * 0.18f;
+                // Matches the real app's month_today_round_rect_corner_radius (5dp)
+                float corner = 5f * getResources().getDisplayMetrics().density;
 
                 Paint.Style savedStyle = p.getStyle();
                 int savedColor = p.getColor();
@@ -1593,7 +1594,8 @@ public class MonthWeekEventsView extends SimpleWeekView {
             mEventSquarePaint.setStyle(getRectanglePaintStyle());
             mEventSquarePaint.setColor(getRectangleColor());
             if (ThemeUtils.isOneUiStyleEnabled(mContext)) {
-                float corner = (r.bottom - r.top) * 0.35f;
+                // Matches the real app's month_event_exist_rect_corner_radius (5dp)
+                float corner = 5f * getResources().getDisplayMetrics().density;
                 canvas.drawRoundRect(new RectF(r), corner, corner, mEventSquarePaint);
             } else {
                 canvas.drawRect(r, mEventSquarePaint);

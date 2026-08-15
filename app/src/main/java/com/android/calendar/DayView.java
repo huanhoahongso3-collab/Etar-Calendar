@@ -3522,7 +3522,8 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
     // One UI's day/week event blocks have rounded corners rather than square ones.
     private void drawEventBoxRect(Canvas canvas, Rect r, Paint p) {
         if (ThemeUtils.isOneUiStyleEnabled(mContext)) {
-            float corner = Math.min(r.width(), r.height()) * 0.22f;
+            // Matches the real app's timeline_event_box_radius (3dp)
+            float corner = 3f * getResources().getDisplayMetrics().density;
             canvas.drawRoundRect(new RectF(r), corner, corner, p);
         } else {
             canvas.drawRect(r, p);
