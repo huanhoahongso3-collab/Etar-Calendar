@@ -159,6 +159,8 @@
     <string name="preferences_use_home_tz_descrip" msgid="4835375381297413746">"Hiện lịch và thời gian sự kiện trong múi giờ chính khi đi du lịch"</string>
     <string name="preferences_home_tz_title" msgid="6680000444088818578">"Múi giờ chính"</string>
     <string name="preferences_show_week_num_title" msgid="5280734329664503461">"Hiển thị số tuần"</string>
+    <string name="preferences_show_lunar_calendar_vn_title">Hiển thị lịch âm</string>
+    <string name="preferences_show_lunar_calendar_vn_summary">Hiển thị ngày âm lịch bên cạnh lịch dương</string>
     <string name="preferences_build_version" msgid="8242471883413502068">Phiên bản bản dựng</string>
     <plurals name="month_more_events">
         <item quantity="other">+<xliff:g id="number">%d</xliff:g></item>

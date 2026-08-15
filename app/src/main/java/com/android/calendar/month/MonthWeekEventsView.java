@@ -47,6 +47,7 @@ import androidx.core.content.ContextCompat;
 
 import com.android.calendar.Event;
 import com.android.calendar.LunarUtils;
+import com.android.calendar.VietnameseLunarUtils;
 import com.android.calendar.Utils;
 import com.android.calendar.settings.ViewDetailsPreferences;
 import com.android.calendar.calendarcommon2.Time;
@@ -640,29 +641,50 @@ public class MonthWeekEventsView extends SimpleWeekView {
                 mMonthNumPaint.setFakeBoldText(isBold = false);
             }
 
-            if (LunarUtils.showLunar(getContext())) {
-                // adjust the year and month
-                int year = time.getYear();
-                int month = time.getMonth();
-                int julianMondayDay = time.getDay();
-                int monthDay = Integer.parseInt(mDayNumbers[i]);
-                if (monthDay != julianMondayDay) {
-                    int offsetDay = monthDay - julianMondayDay;
-                    if (offsetDay > 6) {
-                        month = month - 1;
-                        if (month < 0) {
-                            month = 11;
-                            year = year - 1;
-                        }
-                    } else if (offsetDay < -6) {
-                        month = month + 1;
-                        if (month > 11) {
-                            month = 0;
-                            year = year + 1;
-                        }
+            int year = time.getYear();
+            int month = time.getMonth();
+            int julianMondayDay = time.getDay();
+            int monthDay = Integer.parseInt(mDayNumbers[i]);
+            if (monthDay != julianMondayDay) {
+                int offsetDay = monthDay - julianMondayDay;
+                if (offsetDay > 6) {
+                    month = month - 1;
+                    if (month < 0) {
+                        month = 11;
+                        year = year - 1;
+                    }
+                } else if (offsetDay < -6) {
+                    month = month + 1;
+                    if (month > 11) {
+                        month = 0;
+                        year = year + 1;
                     }
                 }
+            }
 
+            if (VietnameseLunarUtils.isEnabled(getContext())) {
+                String lunarLabel = VietnameseLunarUtils.getShortLunarLabel(year, month, monthDay);
+                if (!TextUtils.isEmpty(lunarLabel)) {
+                    float originalTextSize = mMonthNumPaint.getTextSize();
+                    mMonthNumPaint.setTextSize(mTextSizeLunar);
+                    Resources res = getResources();
+                    int mOrientation = res.getConfiguration().orientation;
+
+                    int infoX;
+                    int infoY;
+                    if (mOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+                        infoX = x - mMonthNumHeight - mTopPaddingMonthNumber;
+                        infoY = y;
+                    } else {
+                        infoX = x;
+                        infoY = y + mMonthNumHeight + mLunarPaddingLunar;
+                    }
+                    canvas.drawText(lunarLabel, infoX, infoY, mMonthNumPaint);
+
+                    // restore the text size.
+                    mMonthNumPaint.setTextSize(originalTextSize);
+                }
+            } else if (LunarUtils.showLunar(getContext())) {
                 ArrayList<String> infos = new ArrayList<String>();
                 LunarUtils.get(getContext(), year, month, monthDay,
                         LunarUtils.FORMAT_LUNAR_SHORT | LunarUtils.FORMAT_MULTI_FESTIVAL, false,

@@ -539,6 +539,11 @@
     <!-- Title of the settings item to show week number in week view [CHAR LIMIT=40] -->
     <string name="preferences_show_week_num_title">Show week number</string>
 
+    <!-- Title of the settings item to toggle the Vietnamese lunar calendar overlay [CHAR LIMIT=40] -->
+    <string name="preferences_show_lunar_calendar_vn_title">Show Vietnamese lunar calendar</string>
+    <!-- Summary of the settings item to toggle the Vietnamese lunar calendar overlay -->
+    <string name="preferences_show_lunar_calendar_vn_summary">Display Âm lịch dates alongside the solar calendar</string>
+
     <!-- Check box label for using custom snooze delays -->
     <string name="preferences_alerts_custom_snooze_delay_title">Ask for reminder snooze delay</string>
     <!-- Summaries for using custom snooze delays -->

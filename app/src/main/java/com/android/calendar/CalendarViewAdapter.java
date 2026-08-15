@@ -202,7 +202,18 @@ public class CalendarViewAdapter extends BaseAdapter {
                 case ViewType.DAY:
                     weekDay.setVisibility(View.VISIBLE);
                     weekDay.setText(buildDayOfWeek());
-                    if (LunarUtils.showLunar(mContext)) {
+                    if (VietnameseLunarUtils.isEnabled(mContext)) {
+                        Time time = new Time(mTimeZone);
+                        time.set(mMilliTime);
+                        String lunar = VietnameseLunarUtils.getLongLunarLabel(time.getYear(),
+                                time.getMonth(), time.getDay());
+                        if (!TextUtils.isEmpty(lunar)) {
+                            lunarInfo.setVisibility(View.VISIBLE);
+                            lunarInfo.setText(lunar);
+                        } else {
+                            lunarInfo.setVisibility(View.GONE);
+                        }
+                    } else if (LunarUtils.showLunar(mContext)) {
                         lunarInfo.setVisibility(View.VISIBLE);
                         Time time = new Time(mTimeZone);
                         time.set(mMilliTime);
