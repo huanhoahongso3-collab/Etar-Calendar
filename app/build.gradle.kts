@@ -158,15 +158,18 @@ dependencies {
 	// lifecycle
 	implementation(libs.androidx.lifecycle.livedata)
 
-	// OneUI design system (Samsung One UI 7 look and feel) — see
+	// OneUI design system (Samsung One UI 8 look and feel) — see
 	// https://github.com/tribalfs/oneui-design. Requires GitHub Packages
 	// credentials, see settings.gradle.kts.
 	implementation(libs.oneui.design) {
-		// The picker-basic/picker-color/picker-app submodules all declare the
-		// same "androidx.picker" manifest namespace, which trips AGP's
-		// unique-namespace manifest merger check. Etar doesn't use OneUI's
-		// date/color/app pickers, so drop them.
-		exclude(group = "sesl.androidx.picker")
+		// picker-basic/picker-color/picker-app all declare the same
+		// "androidx.picker" manifest namespace, which trips AGP's unique-
+		// namespace manifest merger check. sesl-appcompat's own resources
+		// (PickerDialog styles) live in picker-basic, so that one must stay;
+		// only the color/app picker dialogs (which Etar doesn't use) are
+		// dropped to resolve the collision.
+		exclude(group = "sesl.androidx.picker", module = "picker-color")
+		exclude(group = "sesl.androidx.picker", module = "picker-app")
 	}
 	implementation(libs.oneui.icons)
 	implementation(libs.bundles.sesl.androidx)

@@ -16,23 +16,24 @@ workRuntime = "2.11.2"
 androidxConcurrent = "1.3.0"
 androidxTest = "1.7.0"
 
-# OneUI 7 (SESL7) design system — versions pinned to match the combo tested by
-# https://github.com/tribalfs/oneui-design (oneui7 branch)
-oneuiDesign = "0.7.8+oneui7"
+# OneUI 8 (SESL8) design system — versions pinned to match the combo tested by
+# https://github.com/tribalfs/oneui-design (main/oneui8 branch)
+oneuiDesign = "0.9.4+oneui8"
 oneuiIcons = "1.1.0"
-seslCore = "1.16.0+1.0.16-sesl7+rev1"
-seslCoreKtx = "1.16.0+1.0.0-sesl7+rev0"
-seslAppcompat = "1.7.1+1.0.47000-sesl7+rev1"
-seslFragment = "1.8.8+1.0.9-sesl7+rev0"
-seslMaterial = "1.12.0+1.0.39-sesl7+rev6"
-seslPreference = "1.2.1+1.0.12-sesl7+rev0"
-seslRecyclerview = "1.4.0+1.0.33-sesl7+rev5"
-seslDrawerlayout = "1.2.0+1.0.0-sesl7+rev0"
-seslCoordinatorlayout = "1.3.0+1.0.0-sesl7+rev0"
-seslCustomview = "1.2.0-rc01+1.0.0-sesl7+rev0"
-seslSlidingpanelayout = "1.2.0+1.0.5-sesl7+rev1"
-seslSwiperefreshlayout = "1.2.0-alpha01+1.0.1-sesl7+rev0"
-seslIndexscroll = "1.0.6+1.0.6-sesl7+rev3"
+seslCore = "1.17.0+1.0.7-sesl8+rev1"
+seslCoreKtx = "1.17.0+1.0.0-sesl8+rev0"
+seslAppcompat = "1.7.1+1.0.21-sesl8+rev8"
+seslFragment = "1.8.9+1.0.5-sesl8+rev1"
+seslMaterial = "1.12.0+1.0.32-sesl8+rev3"
+seslPreference = "1.2.1+1.0.0-sesl8+rev1"
+seslRecyclerview = "1.4.0+1.0.12-sesl8+rev3"
+seslDrawerlayout = "1.2.0+1.0.0-sesl8+rev0"
+seslCoordinatorlayout = "1.3.0+1.0.0-sesl8+rev0"
+seslCustomview = "1.2.0-rc01+1.0.0-sesl8+rev0"
+seslSlidingpanelayout = "1.2.0+1.0.4-sesl8+rev1"
+seslSwiperefreshlayout = "1.2.0-alpha01+1.0.0-sesl8+rev0"
+seslIndexscroll = "1.0.0+1.0.0-sesl8+rev0"
+seslPickerBasic = "1.0.7+1.0.7-sesl8+rev2"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "compat" }
@@ -64,6 +65,7 @@ sesl-customview = { module = "sesl.androidx.customview:customview", version.ref 
 sesl-slidingpanelayout = { module = "sesl.androidx.slidingpanelayout:slidingpanelayout", version.ref = "seslSlidingpanelayout" }
 sesl-swiperefreshlayout = { module = "sesl.androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "seslSwiperefreshlayout" }
 sesl-indexscroll = { module = "sesl.androidx.indexscroll:indexscroll", version.ref = "seslIndexscroll" }
+sesl-picker-basic = { module = "sesl.androidx.picker:picker-basic", version.ref = "seslPickerBasic" }
 
 [bundles]
 sesl-androidx = [
@@ -79,6 +81,7 @@ sesl-androidx = [
     "sesl-slidingpanelayout",
     "sesl-swiperefreshlayout",
     "sesl-indexscroll",
+    "sesl-picker-basic",
 ]
 
 [plugins]
