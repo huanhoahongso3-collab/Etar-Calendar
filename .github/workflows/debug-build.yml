@@ -32,6 +32,9 @@ jobs:
         uses: gradle/actions/wrapper-validation@v6
 
       - name: Build debug APK
+        env:
+          GPR_USER: ${{ secrets.USERNAME }}
+          GPR_TOKEN: ${{ secrets.TOKEN }}
         run: ./gradlew :app:assembleDebug --stacktrace --info
 
       - name: Upload debug APK
