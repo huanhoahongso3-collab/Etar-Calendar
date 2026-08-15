@@ -161,7 +161,13 @@ dependencies {
 	// OneUI design system (Samsung One UI 7 look and feel) — see
 	// https://github.com/tribalfs/oneui-design. Requires GitHub Packages
 	// credentials, see settings.gradle.kts.
-	implementation(libs.oneui.design)
+	implementation(libs.oneui.design) {
+		// The picker-basic/picker-color/picker-app submodules all declare the
+		// same "androidx.picker" manifest namespace, which trips AGP's
+		// unique-namespace manifest merger check. Etar doesn't use OneUI's
+		// date/color/app pickers, so drop them.
+		exclude(group = "sesl.androidx.picker")
+	}
 	implementation(libs.oneui.icons)
 	implementation(libs.bundles.sesl.androidx)
 	implementation(libs.sesl.material)
