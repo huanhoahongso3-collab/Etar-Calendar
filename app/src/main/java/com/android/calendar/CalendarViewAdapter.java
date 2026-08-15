@@ -19,9 +19,11 @@ package com.android.calendar;
 import android.content.Context;
 import android.content.Loader;
 import android.content.Loader.OnLoadCompleteListener;
+import android.graphics.Typeface;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +33,7 @@ import android.widget.TextView;
 import com.android.calendar.CalendarController.ViewType;
 import com.android.calendar.LunarUtils.LunarInfoLoader;
 import com.android.calendar.calendarcommon2.Time;
+import com.android.calendar.theme.ThemeUtils;
 
 import java.util.Calendar;
 import java.util.Formatter;
@@ -197,6 +200,18 @@ public class CalendarViewAdapter extends BaseAdapter {
             TextView weekDay = (TextView) v.findViewById(R.id.top_button_weekday);
             TextView lunarInfo = (TextView) v.findViewById(R.id.top_button_lunar);
             TextView date = (TextView) v.findViewById(R.id.top_button_date);
+
+            if (ThemeUtils.isOneUiStyleEnabled(mContext)) {
+                // One UI Calendar uses a large, bold date title.
+                date.setTypeface(Typeface.DEFAULT_BOLD);
+                float baseSizePx = mContext.getResources()
+                        .getDimension(R.dimen.action_bar_date_text_size);
+                date.setTextSize(TypedValue.COMPLEX_UNIT_PX, baseSizePx * 1.15f);
+            } else {
+                date.setTypeface(Typeface.DEFAULT);
+                date.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                        mContext.getResources().getDimension(R.dimen.action_bar_date_text_size));
+            }
 
             switch (mCurrentMainView) {
                 case ViewType.DAY:
