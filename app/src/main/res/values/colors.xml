@@ -30,6 +30,8 @@
     <color name="oneui_primary">#0381FE</color>
     <color name="oneui_today_circle">#0381FE</color>
     <color name="oneui_today_number_text">#ffffff</color>
+    <color name="oneui_fab_background">#e6e6ea</color>
+    <color name="oneui_weekend_text">#ff5b53</color>
 
     <color name="pressed">#330066ff</color>
 
@@ -80,7 +82,7 @@
     <color name="month_event_other_color">#FF666666</color>
     <color name="month_event_extra_other_color">#4C999999</color>
     <color name="month_saturday">#80333333</color>
-    <color name="month_sunday">#80333333</color>
+    <color name="month_sunday">#ff5b53</color>
     <color name="month_grid_lines">#ffdedede</color>
     <color name="month_other_month_day_number">#ff939497</color>
 
@@ -258,7 +260,7 @@
     <color name="day_clicked_background_color_black">#FF33B5E5</color>
     <color name="month_day_names_color_black">#ffffff</color>
     <color name="month_saturday_black">#f5f5f5</color>
-    <color name="month_sunday_black">#f5f5f5</color>
+    <color name="month_sunday_black">#ff6f68</color>
 
     <!-- Black Color AgendaView -->
     <color name="agenda_item_declined_color_black">#616161</color>
@@ -362,7 +364,7 @@
     <color name="day_clicked_background_color_dark">#FF33B5E5</color>
     <color name="month_day_names_color_dark">#ffffff</color>
     <color name="month_saturday_dark">#f5f5f5</color>
-    <color name="month_sunday_dark">#f5f5f5</color>
+    <color name="month_sunday_dark">#ff6f68</color>
 
     <!-- Dark Color AgendaView -->
     <color name="agenda_item_declined_color_dark">#616161</color>

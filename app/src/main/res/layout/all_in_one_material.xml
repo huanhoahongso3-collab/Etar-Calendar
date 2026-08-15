@@ -55,5 +55,11 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
+        android:background="@color/oui_des_drawerlayout_drawer_bg_color"
+        app:itemIconTint="@color/oui_des_drawerlayout_header_icon_tint"
+        app:itemTextColor="@color/oui_des_drawer_menu_item_text_color"
+        app:itemRippleColor="@color/sesl_list_ripple_color_light"
+        app:itemShapeFillColor="@color/oui_des_drawer_menu_item_selected_bg_color"
+        app:itemShapeAppearanceOverlay="@style/OneUiDrawerItemShape"
         app:menu="@menu/calendar_view" />
 </androidx.drawerlayout.widget.DrawerLayout>

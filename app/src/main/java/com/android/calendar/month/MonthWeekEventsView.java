@@ -491,6 +491,15 @@ public class MonthWeekEventsView extends SimpleWeekView {
 
     @Override
     protected void drawDaySeparators(Canvas canvas) {
+        // One UI's month grid only shows a horizontal rule between weeks, no
+        // vertical rules between day columns.
+        if (ThemeUtils.isOneUiStyleEnabled(getContext())) {
+            p.setColor(mDaySeparatorInnerColor);
+            p.setStrokeWidth(mDaySeparatorInnerWidth);
+            canvas.drawLine(0, 0, mWidth, 0, p);
+            return;
+        }
+
         final int coordinatesPerLine = 4;
         // There are mNumDays - 1 vertical lines and 1 horizontal, so the total is mNumDays
         float[] lines = new float[mNumDays * coordinatesPerLine];

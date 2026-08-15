@@ -7,5 +7,7 @@
     <color name="oneui_primary">#4DA6FF</color>
     <color name="oneui_today_circle">#4DA6FF</color>
     <color name="oneui_today_number_text">#0a0a0a</color>
+    <color name="oneui_fab_background">#2c2c30</color>
+    <color name="oneui_weekend_text">#ff6f68</color>
 
 </resources>

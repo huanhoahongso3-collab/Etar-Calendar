@@ -18,11 +18,16 @@
         <item name="android:windowLightStatusBar">true</item>
     </style>
 
-    <!-- Applied at runtime on top of Theme.Etar when the "One UI style" preference is
-         enabled, to swap the accent color for the Samsung OneUI signature blue. -->
+    <!-- Applied at runtime on top of Theme.Etar to swap the accent color for
+         the Samsung OneUI signature blue. -->
     <style name="OneUiAccentOverlay" parent="">
         <item name="colorAccent">@color/oneui_primary</item>
         <item name="colorPrimary">@color/oneui_primary</item>
+    </style>
+
+    <!-- One UI drawer menu items are large rounded-corner pills. -->
+    <style name="OneUiDrawerItemShape">
+        <item name="cornerSize">24dp</item>
     </style>
 
     <style name="CalendarAppThemeLightTeal" parent="Theme.AppCompat.Light.NoActionBar">

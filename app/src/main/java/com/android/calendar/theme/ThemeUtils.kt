@@ -10,14 +10,16 @@ object ThemeUtils {
 
     private const val THEME_PREF = "pref_theme"
     private const val PURE_BLACK_NIGHT_MODE = "pref_pure_black_night_mode"
-    const val ONEUI_STYLE_PREF = "pref_oneui_style"
 
     val Context.isPureBlackModeEnabled: Boolean
         get() = Utils.getSharedPreference(this, PURE_BLACK_NIGHT_MODE, false)
 
+    // The app is always One UI-styled now (Theme.Etar is based on OneUITheme),
+    // so this is no longer a user-facing toggle — kept as a function so the
+    // (many) call sites that gate One UI-specific drawing on it don't need to
+    // change.
     @JvmStatic
-    fun isOneUiStyleEnabled(context: Context): Boolean =
-        Utils.getSharedPreference(context, ONEUI_STYLE_PREF, false)
+    fun isOneUiStyleEnabled(context: Context): Boolean = true
 
     fun getTheme(context: Context): Theme {
         val theme = Utils.getSharedPreference(

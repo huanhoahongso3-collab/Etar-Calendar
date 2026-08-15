@@ -524,13 +524,12 @@ public class AllInOneActivity extends AbstractCalendarActivity implements EventH
 
     public void setupFloatingActionButton() {
         if (ThemeUtils.isOneUiStyleEnabled(this)) {
-            // One UI's FAB is a rounded square rather than a circle.
-            float radius = getResources().getDisplayMetrics().density * 18;
-            mFab.setShapeAppearanceModel(
-                    mFab.getShapeAppearanceModel().toBuilder()
-                            .setAllCornerSizes(radius)
-                            .build());
+            // One UI Calendar's FAB is a plain circle with a muted/neutral
+            // background and an accent-colored "+" icon, not a filled
+            // accent-colored shape.
             mFab.setBackgroundTintList(
+                    ColorStateList.valueOf(ContextCompat.getColor(this, R.color.oneui_fab_background)));
+            mFab.setImageTintList(
                     ColorStateList.valueOf(ContextCompat.getColor(this, R.color.oneui_primary)));
         }
         mFab.setOnClickListener(new View.OnClickListener() {
