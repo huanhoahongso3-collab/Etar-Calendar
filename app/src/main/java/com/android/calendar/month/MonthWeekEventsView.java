@@ -28,6 +28,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.provider.CalendarContract.Attendees;
@@ -571,18 +572,42 @@ public class MonthWeekEventsView extends SimpleWeekView {
             p.setColor(mMonthBGOtherColor);
             canvas.drawRect(r, p);
         }
-        if (mHasToday && !ThemeUtils.isOneUiStyleEnabled(mContext)) {
-            int selectedColor = ContextCompat.getColor(mContext, DynamicThemeKt.getColorId(DynamicThemeKt.getPrimaryColor(mContext)));
+        if (mHasToday) {
+            if (ThemeUtils.isOneUiStyleEnabled(mContext)) {
+                // One UI marks today with a thin rounded-rect outline around
+                // the whole cell rather than a filled highlight.
+                float inset = mTodayHighlightWidth * 1.5f;
+                float left = computeDayLeftPosition(mTodayIndex) + inset;
+                float right = computeDayLeftPosition(mTodayIndex + 1) - inset;
+                float top = mDaySeparatorInnerWidth + inset;
+                float bottom = mHeight - inset;
+                float corner = (right - left) * 0.18f;
 
-            if (Utils.getSharedPreference(mContext, "pref_theme", "light").equals("light")) {
-                p.setColor(selectedColor);
-                p.setAlpha(72);
+                Paint.Style savedStyle = p.getStyle();
+                int savedColor = p.getColor();
+                float savedStrokeWidth = p.getStrokeWidth();
+
+                p.setStyle(Paint.Style.STROKE);
+                p.setStrokeWidth(mTodayHighlightWidth);
+                p.setColor(ContextCompat.getColor(mContext, R.color.oneui_today_circle));
+                canvas.drawRoundRect(left, top, right, bottom, corner, corner, p);
+
+                p.setStyle(savedStyle);
+                p.setColor(savedColor);
+                p.setStrokeWidth(savedStrokeWidth);
             } else {
-                p.setColor(mMonthBGTodayColor);
+                int selectedColor = ContextCompat.getColor(mContext, DynamicThemeKt.getColorId(DynamicThemeKt.getPrimaryColor(mContext)));
+
+                if (Utils.getSharedPreference(mContext, "pref_theme", "light").equals("light")) {
+                    p.setColor(selectedColor);
+                    p.setAlpha(72);
+                } else {
+                    p.setColor(mMonthBGTodayColor);
+                }
+                r.left = computeDayLeftPosition(mTodayIndex);
+                r.right = computeDayLeftPosition(mTodayIndex + 1);
+                canvas.drawRect(r, p);
             }
-            r.left = computeDayLeftPosition(mTodayIndex);
-            r.right = computeDayLeftPosition(mTodayIndex + 1);
-            canvas.drawRect(r, p);
         }
     }
 
@@ -637,7 +662,7 @@ public class MonthWeekEventsView extends SimpleWeekView {
             boolean isToday = mHasToday && todayIndex == i;
             if (isToday) {
                 mMonthNumPaint.setColor(oneUiStyle ?
-                        ContextCompat.getColor(mContext, R.color.oneui_today_number_text) :
+                        ContextCompat.getColor(mContext, R.color.oneui_today_circle) :
                         mMonthNumTodayColor);
                 mMonthNumPaint.setFakeBoldText(isBold = true);
                 if (i + 1 < numCount) {
@@ -650,19 +675,6 @@ public class MonthWeekEventsView extends SimpleWeekView {
                 mMonthNumPaint.setColor(isFocusMonth ? mMonthNumColor : mMonthNumOtherColor);
             }
             x = computeDayLeftPosition(i - offset) - (mSidePaddingMonthNumber);
-            if (isToday && oneUiStyle) {
-                float textWidth = mMonthNumPaint.measureText(mDayNumbers[i]);
-                float centerX = x - textWidth / 2f;
-                float centerY = y + (mMonthNumPaint.ascent() + mMonthNumPaint.descent()) / 2f;
-                float radius = mMonthNumHeight * 0.62f;
-                int savedColor = p.getColor();
-                Paint.Style savedStyle = p.getStyle();
-                p.setStyle(Paint.Style.FILL);
-                p.setColor(ContextCompat.getColor(mContext, R.color.oneui_today_circle));
-                canvas.drawCircle(centerX, centerY, radius, p);
-                p.setColor(savedColor);
-                p.setStyle(savedStyle);
-            }
             canvas.drawText(mDayNumbers[i], x, y, mMonthNumPaint);
             if (isBold) {
                 mMonthNumPaint.setFakeBoldText(isBold = false);
@@ -1580,7 +1592,12 @@ public class MonthWeekEventsView extends SimpleWeekView {
             mBoundaries.setRectangle(mFormat.getDaySpan(day), mFormat.getEventLines());
             mEventSquarePaint.setStyle(getRectanglePaintStyle());
             mEventSquarePaint.setColor(getRectangleColor());
-            canvas.drawRect(r, mEventSquarePaint);
+            if (ThemeUtils.isOneUiStyleEnabled(mContext)) {
+                float corner = (r.bottom - r.top) * 0.35f;
+                canvas.drawRoundRect(new RectF(r), corner, corner, mEventSquarePaint);
+            } else {
+                canvas.drawRect(r, mEventSquarePaint);
+            }
         }
 
         protected int getAvailableSpaceForText(int spanningDays) {

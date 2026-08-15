@@ -10,18 +10,9 @@ object ThemeUtils {
 
     private const val THEME_PREF = "pref_theme"
     private const val PURE_BLACK_NIGHT_MODE = "pref_pure_black_night_mode"
-    const val MATERIAL_YOU_PREF = "pref_material_you_color"
 
     val Context.isPureBlackModeEnabled: Boolean
         get() = Utils.getSharedPreference(this, PURE_BLACK_NIGHT_MODE, false)
-
-    // "Material You colors": use the system wallpaper-based accent instead of
-    // the fixed One UI blue. Only meaningful (and only shown in settings) on
-    // API 31+ devices that actually support it.
-    @JvmStatic
-    fun isMaterialYouEnabled(context: Context): Boolean =
-        Utils.isMonetAvailable(context) &&
-            Utils.getSharedPreference(context, MATERIAL_YOU_PREF, false)
 
     // The app is always One UI-styled now (Theme.Etar is based on OneUITheme),
     // so this is no longer a user-facing toggle — kept as a function so the

@@ -34,6 +34,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -83,6 +84,7 @@ import com.android.calendar.CalendarController.ViewType;
 import com.android.calendar.settings.GeneralPreferences;
 import com.android.calendar.calendarcommon2.Time;
 import com.android.calendar.theme.DynamicThemeKt;
+import com.android.calendar.theme.ThemeUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
@@ -3517,6 +3519,16 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
         setSelectedEvent(startEvent);
     }
 
+    // One UI's day/week event blocks have rounded corners rather than square ones.
+    private void drawEventBoxRect(Canvas canvas, Rect r, Paint p) {
+        if (ThemeUtils.isOneUiStyleEnabled(mContext)) {
+            float corner = Math.min(r.width(), r.height()) * 0.22f;
+            canvas.drawRoundRect(new RectF(r), corner, corner, p);
+        } else {
+            canvas.drawRect(r, p);
+        }
+    }
+
     private void drawEventRect(Event event, Canvas canvas, Paint p, int visibleLeft, int visibleTop,
             int visibleRight, int visibleBot) {
         // Draw the Event Rect
@@ -3570,12 +3582,12 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
             canvas.save();
             if (canvas.clipRect(visibleLeft, visibleTop, visibleRight, visibleBot)) {
                 p.setShadowLayer(STAGGERED_EVENT_SHADOW_WIDTH, 0f, 0f, mStaggeredEventShadowColor);
-                canvas.drawRect(r, p);
+                drawEventBoxRect(canvas, r, p);
                 p.clearShadowLayer();
             }
             canvas.restore();
         } else {
-            canvas.drawRect(r, p);
+            drawEventBoxRect(canvas, r, p);
         }
 
         // Restore paint settings
@@ -3600,7 +3612,7 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
 
             if (paintIt) {
                 p.setColor(color);
-                canvas.drawRect(r, p);
+                drawEventBoxRect(canvas, r, p);
             }
             p.setAntiAlias(true);
         }

@@ -485,11 +485,6 @@
     <!-- Summary of the settings item to enable the Samsung One UI visual style -->
     <string name="preferences_oneui_style_summary">Match the look of Samsung One UI Calendar</string>
 
-    <!-- Title of the settings item to use Material You dynamic (wallpaper-based) colors [CHAR LIMIT=40] -->
-    <string name="preferences_material_you_title">Material You colors</string>
-    <!-- Summary of the settings item to use Material You dynamic colors -->
-    <string name="preferences_material_you_summary">Use your wallpaper\'s colors for the accent instead of One UI blue</string>
-
     <!-- This is the title of a section in the Settings screen for settings
          related to reminders for calendar events -->
     <string name="preferences_reminder_title">Notifications \u0026 reminders</string>
