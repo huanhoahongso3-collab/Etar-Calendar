@@ -68,6 +68,9 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="4dp"
+                        app:showText="false"
+                        android:textOn=""
+                        android:textOff=""
                         app:thumbTint="@color/preference_material_switch_color"/>
                 </LinearLayout>
 

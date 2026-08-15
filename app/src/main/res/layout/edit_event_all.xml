@@ -153,6 +153,9 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/is_all_day_label"
             app:layout_constraintVertical_bias="0.4"
+            app:showText="false"
+            android:textOn=""
+            android:textOff=""
             app:thumbTint="@color/preference_material_switch_color" />
 
         <!-- FROM - Read/write version which launches the date/time pickers -->
