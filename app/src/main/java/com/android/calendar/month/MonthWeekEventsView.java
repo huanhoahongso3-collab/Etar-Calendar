@@ -758,18 +758,11 @@ public class MonthWeekEventsView extends SimpleWeekView {
                 if (!TextUtils.isEmpty(lunarLabel)) {
                     float originalTextSize = mMonthNumPaint.getTextSize();
                     mMonthNumPaint.setTextSize(mTextSizeLunar);
-                    Resources res = getResources();
-                    int mOrientation = res.getConfiguration().orientation;
-
-                    int infoX;
-                    int infoY;
-                    if (mOrientation == Configuration.ORIENTATION_LANDSCAPE) {
-                        infoX = x - mMonthNumHeight - mTopPaddingMonthNumber;
-                        infoY = y;
-                    } else {
-                        infoX = x;
-                        infoY = y + mMonthNumHeight + mLunarPaddingLunar;
-                    }
+                    // Always place the lunar label beside the day number
+                    // (same row), never below it — below is where events
+                    // start, and the two would otherwise overlap.
+                    int infoX = x - mMonthNumHeight - mTopPaddingMonthNumber;
+                    int infoY = y;
                     canvas.drawText(lunarLabel, infoX, infoY, mMonthNumPaint);
 
                     // restore the text size.

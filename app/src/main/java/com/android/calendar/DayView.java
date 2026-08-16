@@ -2562,12 +2562,13 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
         String dateNumStr = String.valueOf(dateNum);
         boolean showAnyLunar = VietnameseLunarUtils.isEnabled(mContext) || LunarUtils.showLunar(mContext);
         if (mNumDays > 1) {
-            float y = -1;
-            if (showAnyLunar) {
-                y = DAY_HEADER_HEIGHT - DAY_HEADER_BOTTOM_MARGIN - DATE_HEADER_FONT_SIZE - 2;
-            } else {
-                y = DAY_HEADER_HEIGHT - DAY_HEADER_BOTTOM_MARGIN;
-            }
+            // Date number sits at its normal (non-lunar) position; the extra
+            // height DAY_HEADER_HEIGHT gained for showAnyLunar is reserved
+            // below it for the lunar row, so nothing overlaps the date or
+            // the day-of-week label above it.
+            float y = DAY_HEADER_HEIGHT - DAY_HEADER_BOTTOM_MARGIN
+                    - (showAnyLunar ? DAY_HEADER_FONT_SIZE + 2 : 0);
+
             // Draw day of the month
             x = computeDayLeftPosition(day) + DAY_HEADER_RIGHT_MARGIN;
             p.setTextAlign(Align.LEFT);
@@ -2578,12 +2579,12 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
             canvas.drawText(dateNumStr, x, y, p);
 
             // Draw day of the week
-            y -= DATE_HEADER_FONT_SIZE;
+            float dayOfWeekY = y - DATE_HEADER_FONT_SIZE;
             p.setTextSize(DAY_HEADER_FONT_SIZE);
             p.setTypeface(Typeface.DEFAULT);
-            canvas.drawText(dayStr, x, y, p);
+            canvas.drawText(dayStr, x, dayOfWeekY, p);
 
-            // To show the lunar info.
+            // To show the lunar info, in the space reserved below the date.
             if (showAnyLunar) {
                 // adjust the year and month
                 int month = mBaseDate.getMonth();
