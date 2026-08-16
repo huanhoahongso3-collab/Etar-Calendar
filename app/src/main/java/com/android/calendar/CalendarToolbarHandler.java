@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 
+import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -25,6 +27,9 @@ public class CalendarToolbarHandler {
     private final Formatter mFormatter;
     private AppCompatActivity mContext;
     private Toolbar mToolbar;
+    // One UI's big centered month/day title, shown on its own row below the
+    // icon-only toolbar rather than as the toolbar's own inline title.
+    private TextView mBigTitle;
     private int mCurrentViewType;
     // The current selected event's time, used to calculate the date and day of the week
     // for the buttons.
@@ -42,8 +47,14 @@ public class CalendarToolbarHandler {
 
 
     public CalendarToolbarHandler(AppCompatActivity context, Toolbar toolbar, int defaultViewType) {
+        this(context, toolbar, null, defaultViewType);
+    }
+
+    public CalendarToolbarHandler(AppCompatActivity context, Toolbar toolbar, TextView bigTitle,
+            int defaultViewType) {
         mContext = context;
         mToolbar = toolbar;
+        mBigTitle = bigTitle;
         mCurrentViewType = defaultViewType;
 
         mMidnightHandler = new Handler();
@@ -79,6 +90,21 @@ public class CalendarToolbarHandler {
     }
 
     private void updateTitle() {
+        if (mBigTitle != null) {
+            // One UI shows a big, short, uppercase title (e.g. "AUG", "16")
+            // on its own row instead of the toolbar's inline title/subtitle.
+            switch (mCurrentViewType) {
+                case CalendarController.ViewType.DAY:
+                case CalendarController.ViewType.AGENDA:
+                    mBigTitle.setText(buildMonthDayDate().toUpperCase(Locale.getDefault()));
+                    break;
+                default:
+                    mBigTitle.setText(buildMonthDate().toUpperCase(Locale.getDefault()));
+                    break;
+            }
+            return;
+        }
+
         switch (mCurrentViewType) {
             case CalendarController.ViewType.DAY:
                 mToolbar.setSubtitle(buildDayOfWeek());

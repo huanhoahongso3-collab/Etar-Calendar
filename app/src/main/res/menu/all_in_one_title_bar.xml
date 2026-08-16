@@ -26,32 +26,33 @@
         android:title="@string/goto_today"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/action_search"
+        android:alphabeticShortcut="f"
+        android:icon="@drawable/ic_menu_search"
+        android:imeOptions="actionSearch"
+        android:orderInCategory="2"
+        android:title="@string/search"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="ifRoom|collapseActionView" />
+    <item
         android:id="@+id/action_info"
         android:alphabeticShortcut="i"
         android:icon="@drawable/ic_error_outline"
-        android:orderInCategory="1"
+        android:orderInCategory="3"
         android:title="@string/menu_info"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
     <item
         android:id="@+id/action_goto"
         android:alphabeticShortcut="g"
-        android:orderInCategory="2"
+        android:orderInCategory="4"
         android:title="@string/goto_date"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_refresh"
         android:alphabeticShortcut="r"
-        android:orderInCategory="3"
+        android:orderInCategory="5"
         android:title="@string/calendar_refresh"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/action_search"
-        android:alphabeticShortcut="f"
-        android:imeOptions="actionSearch"
-        android:orderInCategory="4"
-        android:title="@string/search"
-        app:actionViewClass="androidx.appcompat.widget.SearchView"
-        app:showAsAction="never|collapseActionView" />
     <item
         android:id="@+id/action_import"
         android:alphabeticShortcut="i"

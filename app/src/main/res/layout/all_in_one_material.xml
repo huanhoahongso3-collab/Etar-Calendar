@@ -29,12 +29,29 @@
             app:menu="@menu/all_in_one_title_bar"
             app:navigationIcon="@drawable/ic_menu_navigator" />
 
+        <!-- One UI's month/week/day header is two-tier: an icon-only toolbar
+             row, then a big bold centered title (e.g. "AUG") on its own row
+             below it, rather than the title sitting inline in the toolbar. -->
+        <TextView
+            android:id="@+id/month_title_big"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/toolbar"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            android:fontFamily="sans-serif-medium"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="?android:attr/textColorPrimary"
+            tools:text="AUG" />
+
         <include
             android:id="@+id/include"
             layout="@layout/all_in_one"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/toolbar" />
+            android:layout_below="@id/month_title_big" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/floating_action_button"

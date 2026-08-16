@@ -493,7 +493,8 @@ public class AllInOneActivity extends AbstractCalendarActivity implements EventH
         mToolbar = binding.toolbar;
 
         if (!mIsTabletConfig) {
-            mCalendarToolbarHandler = new CalendarToolbarHandler(this, mToolbar, viewType);
+            mCalendarToolbarHandler = new CalendarToolbarHandler(this, mToolbar,
+                    binding.monthTitleBig, viewType);
         } else {
             int titleResource = switch (viewType) {
                 case ViewType.AGENDA -> R.string.agenda_view;
