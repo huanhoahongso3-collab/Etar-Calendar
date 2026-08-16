@@ -573,49 +573,52 @@ public class MonthWeekEventsView extends SimpleWeekView {
             p.setColor(mMonthBGOtherColor);
             canvas.drawRect(r, p);
         }
-        if (mHasToday) {
-            if (ThemeUtils.isOneUiStyleEnabled(mContext)) {
-                // One UI marks today with a thin rounded-rect outline around
-                // the whole cell rather than a filled highlight.
-                float inset = mTodayHighlightWidth * 1.5f;
-                float left = computeDayLeftPosition(mTodayIndex) + inset;
-                float right = computeDayLeftPosition(mTodayIndex + 1) - inset;
-                float top = mDaySeparatorInnerWidth + inset;
-                float bottom = mHeight - inset;
-                // Matches the real app's month_today_round_rect_corner_radius (5dp)
-                float corner = 5f * getResources().getDisplayMetrics().density;
+        // One UI marks today with a small filled badge directly behind the
+        // day number (drawn in drawWeekNums, where the number itself is
+        // drawn) rather than any whole-cell highlight — see drawWeekNums().
+        if (mHasToday && !ThemeUtils.isOneUiStyleEnabled(mContext)) {
+            int selectedColor = ContextCompat.getColor(mContext, DynamicThemeKt.getColorId(DynamicThemeKt.getPrimaryColor(mContext)));
 
-                Paint.Style savedStyle = p.getStyle();
-                int savedColor = p.getColor();
-                float savedStrokeWidth = p.getStrokeWidth();
-
-                p.setStyle(Paint.Style.STROKE);
-                p.setStrokeWidth(mTodayHighlightWidth);
-                p.setColor(ContextCompat.getColor(mContext, R.color.oneui_today_circle));
-                canvas.drawRoundRect(left, top, right, bottom, corner, corner, p);
-
-                p.setStyle(savedStyle);
-                p.setColor(savedColor);
-                p.setStrokeWidth(savedStrokeWidth);
+            if (Utils.getSharedPreference(mContext, "pref_theme", "light").equals("light")) {
+                p.setColor(selectedColor);
+                p.setAlpha(72);
             } else {
-                int selectedColor = ContextCompat.getColor(mContext, DynamicThemeKt.getColorId(DynamicThemeKt.getPrimaryColor(mContext)));
-
-                if (Utils.getSharedPreference(mContext, "pref_theme", "light").equals("light")) {
-                    p.setColor(selectedColor);
-                    p.setAlpha(72);
-                } else {
-                    p.setColor(mMonthBGTodayColor);
-                }
-                r.left = computeDayLeftPosition(mTodayIndex);
-                r.right = computeDayLeftPosition(mTodayIndex + 1);
-                canvas.drawRect(r, p);
+                p.setColor(mMonthBGTodayColor);
             }
+            r.left = computeDayLeftPosition(mTodayIndex);
+            r.right = computeDayLeftPosition(mTodayIndex + 1);
+            canvas.drawRect(r, p);
         }
     }
 
-    // Draw the "clicked" color on the tapped day
+    // Draw the "clicked"/selected indicator on the tapped day
     private void drawClick(Canvas canvas) {
-        if (mClickedDayIndex != -1) {
+        if (mClickedDayIndex == -1) return;
+
+        if (ThemeUtils.isOneUiStyleEnabled(mContext)) {
+            // One UI marks the selected day with a thin rounded-rect outline
+            // around the whole cell (not a filled highlight).
+            float inset = mTodayHighlightWidth * 1.5f;
+            float left = computeDayLeftPosition(mClickedDayIndex) + inset;
+            float right = computeDayLeftPosition(mClickedDayIndex + 1) - inset;
+            float top = mDaySeparatorInnerWidth + inset;
+            float bottom = mHeight - inset;
+            // Matches the real app's month_today_round_rect_corner_radius (5dp)
+            float corner = 5f * getResources().getDisplayMetrics().density;
+
+            Paint.Style savedStyle = p.getStyle();
+            int savedColor = p.getColor();
+            float savedStrokeWidth = p.getStrokeWidth();
+
+            p.setStyle(Paint.Style.STROKE);
+            p.setStrokeWidth(mTodayHighlightWidth);
+            p.setColor(ContextCompat.getColor(mContext, R.color.oneui_today_circle));
+            canvas.drawRoundRect(left, top, right, bottom, corner, corner, p);
+
+            p.setStyle(savedStyle);
+            p.setColor(savedColor);
+            p.setStrokeWidth(savedStrokeWidth);
+        } else {
             int alpha = p.getAlpha();
             p.setColor(mClickedDayColor);
             p.setAlpha(mClickedAlpha);
@@ -664,7 +667,7 @@ public class MonthWeekEventsView extends SimpleWeekView {
             boolean isToday = mHasToday && todayIndex == i;
             if (isToday) {
                 mMonthNumPaint.setColor(oneUiStyle ?
-                        ContextCompat.getColor(mContext, R.color.oneui_today_circle) :
+                        ContextCompat.getColor(mContext, R.color.oneui_today_number_text) :
                         mMonthNumTodayColor);
                 mMonthNumPaint.setFakeBoldText(isBold = true);
                 if (i + 1 < numCount) {
@@ -677,6 +680,25 @@ public class MonthWeekEventsView extends SimpleWeekView {
                 mMonthNumPaint.setColor(isFocusMonth ? mMonthNumColor : mMonthNumOtherColor);
             }
             x = computeDayLeftPosition(i - offset) - (mSidePaddingMonthNumber);
+            if (isToday && oneUiStyle) {
+                // Small filled rounded-square badge directly behind the
+                // number, matching the real app (confirmed live: today gets
+                // a filled accent badge, not just an outline — the outline
+                // is actually the *selected/tapped* day's indicator).
+                float textWidth = mMonthNumPaint.measureText(mDayNumbers[i]);
+                float halfSize = mMonthNumHeight * 0.52f;
+                float centerX = x - textWidth / 2f;
+                float centerY = y + (mMonthNumPaint.ascent() + mMonthNumPaint.descent()) / 2f;
+                float corner = 6f * getResources().getDisplayMetrics().density;
+                Paint.Style savedStyle = p.getStyle();
+                int savedColor = p.getColor();
+                p.setStyle(Paint.Style.FILL);
+                p.setColor(ContextCompat.getColor(mContext, R.color.oneui_today_circle));
+                canvas.drawRoundRect(centerX - halfSize, centerY - halfSize,
+                        centerX + halfSize, centerY + halfSize, corner, corner, p);
+                p.setStyle(savedStyle);
+                p.setColor(savedColor);
+            }
             canvas.drawText(mDayNumbers[i], x, y, mMonthNumPaint);
             if (isBold) {
                 mMonthNumPaint.setFakeBoldText(isBold = false);

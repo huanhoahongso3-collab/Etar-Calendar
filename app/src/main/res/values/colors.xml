@@ -28,11 +28,12 @@
 
     <!-- One UI style accent (Samsung OneUI 7 signature blue) -->
     <color name="oneui_primary">#0381FE</color>
-    <!-- Real One UI Calendar marks today with the plain foreground text
-         color (black/white), not the accent — see common_today_circle_color
-         -> common_list_main_text_color -> text1 in the stock app. -->
-    <color name="oneui_today_circle">#010102</color>
-    <color name="oneui_today_number_text">#010102</color>
+    <!-- Confirmed live against the real app: today gets a small filled
+         accent-colored rounded-square badge behind the number (the box
+         outline is actually the *selected/tapped* day's indicator, not
+         today's — see MonthWeekEventsView.drawClick()/drawWeekNums()). -->
+    <color name="oneui_today_circle">@color/oneui_primary</color>
+    <color name="oneui_today_number_text">#ffffff</color>
     <color name="oneui_fab_background">#e6e6ea</color>
     <color name="oneui_fab_icon">@color/oneui_primary</color>
     <!-- Sunday header + date number color, matching the real app's default
