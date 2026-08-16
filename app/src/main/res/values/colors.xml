@@ -36,6 +36,10 @@
     <color name="oneui_today_number_text">#ffffff</color>
     <color name="oneui_fab_background">#e6e6ea</color>
     <color name="oneui_fab_icon">@color/oneui_primary</color>
+    <!-- Filled-pill button fill, matching the real app's neutral grey
+         "Open source licenses"-style buttons (filled, not outlined). -->
+    <color name="oneui_pill_button_background">#e4e4e8</color>
+    <color name="oneui_pill_button_text">#191c1e</color>
     <!-- Sunday header + date number color, matching the real app's default
          (Saturday stays the normal weekday color there). -->
     <color name="oneui_weekend_text">#d93e36</color>

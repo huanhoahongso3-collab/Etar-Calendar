@@ -114,15 +114,20 @@
          doesn't need Material3 theme attrs to render (unlike
          Widget.Material3.Button.OutlinedButton / .TextButton, which throw
          IllegalArgumentException under a non-MaterialComponents theme). -->
+    <!-- Filled, pill-shaped grey button — matches the real One UI app's
+         solid rounded buttons (e.g. About screen's "Open source licenses"),
+         which are filled neutral-grey pills with bold centered text, not
+         outlined/accent-colored buttons. -->
     <style name="OneUiOutlinedButton" parent="Widget.AppCompat.Button.Borderless.Colored">
-        <item name="android:textColor">@color/oneui_primary</item>
+        <item name="android:textColor">@color/oneui_pill_button_text</item>
         <item name="android:textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:textSize">14sp</item>
         <item name="android:paddingStart">14dp</item>
         <item name="android:paddingEnd">14dp</item>
         <item name="android:paddingTop">8dp</item>
         <item name="android:paddingBottom">8dp</item>
-        <item name="android:background">@drawable/oneui_about_button_background</item>
+        <item name="android:background">@drawable/oneui_pill_button_background</item>
     </style>
 
     <!-- About screen's link actions (Source/Changelog/Report issues). -->

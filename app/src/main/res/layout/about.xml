@@ -134,33 +134,30 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:gravity="center" >
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:orientation="vertical" >
                 <Button
                     android:id="@+id/source"
                     style="@style/OneUiAboutLinkButton"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_gravity="center_vertical"
+                    android:layout_marginBottom="8dp"
                     android:text="@string/source_code" />
 
                 <Button
                     android:id="@+id/changelog"
                     style="@style/OneUiAboutLinkButton"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_gravity="center_vertical"
+                    android:layout_marginBottom="8dp"
                     android:text="@string/changelog" />
 
                 <Button
                     android:id="@+id/issues"
                     style="@style/OneUiAboutLinkButton"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_gravity="center_vertical"
                     android:text="@string/preferences_issues" />
 
             </LinearLayout>
