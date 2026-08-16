@@ -133,6 +133,15 @@
         <item name="android:paddingBottom">10dp</item>
     </style>
 
+    <!-- Plain AppCompat dialog theme, isolated from OneUITheme's dialog/
+         window attrs. Used by RecurrencePickerDialog, whose custom-sized
+         DialogFragment window became untouchable when it inherited
+         OneUITheme's default dialogTheme. -->
+    <style name="OneUiPlainDialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/oneui_primary</item>
+        <item name="colorPrimary">@color/oneui_primary</item>
+    </style>
+
     <style name="CalendarAppThemeLightTeal" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
