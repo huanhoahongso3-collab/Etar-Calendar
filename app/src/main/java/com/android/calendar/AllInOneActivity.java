@@ -27,6 +27,7 @@ import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.AsyncQueryHandler;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -89,9 +90,6 @@ import com.android.calendar.settings.SettingsActivityKt;
 import com.android.calendar.settings.ViewDetailsPreferences;
 import com.android.calendar.theme.DynamicThemeKt;
 import com.android.calendar.calendarcommon2.Time;
-import com.google.android.material.datepicker.CalendarConstraints;
-import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import android.content.res.ColorStateList;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.android.calendar.theme.ThemeUtils;
@@ -493,7 +491,13 @@ public class AllInOneActivity extends AbstractCalendarActivity implements EventH
         mToolbar = binding.toolbar;
 
         if (!mIsTabletConfig) {
-            mCalendarToolbarHandler = new CalendarToolbarHandler(this, mToolbar, viewType);
+            // Without an explicit title, AppCompat's ActionBar defaults the
+            // Toolbar's title to the activity's manifest label ("Etar"),
+            // which showed up duplicated alongside the big month/day title
+            // below it.
+            mToolbar.setTitle("");
+            mCalendarToolbarHandler = new CalendarToolbarHandler(this, mToolbar,
+                    binding.monthTitleBig, viewType);
         } else {
             int titleResource = switch (viewType) {
                 case ViewType.AGENDA -> R.string.agenda_view;
@@ -519,19 +523,33 @@ public class AllInOneActivity extends AbstractCalendarActivity implements EventH
 
     public void setupNavDrawer() {
         mNavigationView.setNavigationItemSelectedListener(this);
+        View header = mNavigationView.getHeaderView(0);
+        if (header != null) {
+            View settingsButton = header.findViewById(R.id.nav_header_settings_button);
+            if (settingsButton != null) {
+                settingsButton.setOnClickListener(v -> {
+                    mDrawerLayout.closeDrawers();
+                    mController.sendEvent(this, EventType.LAUNCH_SETTINGS, null, null, 0, 0);
+                });
+            }
+        }
         showActionBar();
     }
 
     public void setupFloatingActionButton() {
         if (ThemeUtils.isOneUiStyleEnabled(this)) {
-            // One UI's FAB is a rounded square rather than a circle.
-            float radius = getResources().getDisplayMetrics().density * 18;
-            mFab.setShapeAppearanceModel(
-                    mFab.getShapeAppearanceModel().toBuilder()
-                            .setAllCornerSizes(radius)
-                            .build());
+            // One UI Calendar's FAB is a plain circle with a muted/neutral
+            // background and an orange "+" icon (One UI's fixed create-action
+            // color, independent of the app's accent), with a flatter/lower
+            // elevation than stock Material.
             mFab.setBackgroundTintList(
-                    ColorStateList.valueOf(ContextCompat.getColor(this, R.color.oneui_primary)));
+                    ColorStateList.valueOf(ContextCompat.getColor(this, R.color.oneui_fab_background)));
+            mFab.setImageTintList(
+                    ColorStateList.valueOf(ContextCompat.getColor(this, R.color.oneui_fab_icon)));
+            float elevation = getResources().getDisplayMetrics().density * 2;
+            mFab.setCompatElevation(elevation);
+            mFab.setCompatHoveredFocusedTranslationZ(elevation);
+            mFab.setCompatPressedTranslationZ(elevation);
         }
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -983,6 +1001,10 @@ public class AllInOneActivity extends AbstractCalendarActivity implements EventH
             if (mCurrentView != ViewType.AGENDA) {
                 mController.sendEvent(this, EventType.GO_TO, null, null, -1, ViewType.AGENDA);
             }
+        } else if (itemId == R.id.year_menu_item) {
+            if (mCurrentView != ViewType.YEAR) {
+                mController.sendEvent(this, EventType.GO_TO, null, null, -1, ViewType.YEAR);
+            }
         } else if (itemId == R.id.action_settings) {
             mController.sendEvent(this, EventType.LAUNCH_SETTINGS, null, null, 0, 0);
         } else if (itemId == R.id.action_about) {
@@ -1085,6 +1107,13 @@ public class AllInOneActivity extends AbstractCalendarActivity implements EventH
                 }
                 if (mIsTabletConfig) {
                     mToolbar.setTitle(R.string.month_view);
+                }
+                break;
+            case ViewType.YEAR:
+                mNavigationView.getMenu().findItem(R.id.year_menu_item).setChecked(true);
+                frag = new com.android.calendar.year.YearViewFragment(timeMillis);
+                if (mIsTabletConfig) {
+                    mToolbar.setTitle(R.string.year_view);
                 }
                 break;
             case ViewType.WEEK:
@@ -1255,35 +1284,24 @@ public class AllInOneActivity extends AbstractCalendarActivity implements EventH
     }
 
     public void goToDate() {
-        MaterialPickerOnPositiveButtonClickListener<Long> materialPickerOnPositiveButtonClickListener = new MaterialPickerOnPositiveButtonClickListener<>() {
-            @Override
-            public void onPositiveButtonClick(Long selection) {
-                Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-                calendar.setTime(new Date(selection));
+        // Plain framework DatePickerDialog instead of MaterialDatePicker:
+        // Material's picker components require a true Theme.MaterialComponents/
+        // Material3 ancestor theme to resolve their internal styles and
+        // crash under our AppCompat/OneUITheme lineage.
+        Calendar now = Calendar.getInstance();
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+                (view, year, month, dayOfMonth) -> {
+                    Time selectedTime = new Time(mTimeZone);
+                    selectedTime.set(System.currentTimeMillis());  // Needed for recalc function in DayView(time + gmtoff)
+                    selectedTime.setYear(year);
+                    selectedTime.setMonth(month);
+                    selectedTime.setDay(dayOfMonth);
 
-                Time selectedTime = new Time(mTimeZone);
-                selectedTime.set(System.currentTimeMillis());  // Needed for recalc function in DayView(time + gmtoff)
-                selectedTime.setYear(calendar.get(Calendar.YEAR));
-                selectedTime.setMonth(calendar.get(Calendar.MONTH));
-                selectedTime.setDay(calendar.get(Calendar.DAY_OF_MONTH));
-
-                long extras = CalendarController.EXTRA_GOTO_TIME | CalendarController.EXTRA_GOTO_DATE;
-                mController.sendEvent(this, EventType.GO_TO, selectedTime, null, selectedTime, -1, ViewType.CURRENT, extras, null, null);
-            }
-        };
-
-        CalendarConstraints calendarConstraints = new CalendarConstraints.Builder()
-                .setFirstDayOfWeek(Utils.getFirstDayOfWeekAsCalendar(this))
-                .build();
-
-        MaterialDatePicker<Long> datePickerDialog = MaterialDatePicker.Builder.datePicker()
-                .setSelection(Calendar.getInstance().getTimeInMillis())
-                .setCalendarConstraints(calendarConstraints)
-                .setTitleText(R.string.goto_date)
-                .build();
-
-        datePickerDialog.addOnPositiveButtonClickListener(materialPickerOnPositiveButtonClickListener);
-        datePickerDialog.show(getSupportFragmentManager(), "GoTo");
+                    long extras = CalendarController.EXTRA_GOTO_TIME | CalendarController.EXTRA_GOTO_DATE;
+                    mController.sendEvent(this, EventType.GO_TO, selectedTime, null, selectedTime, -1, ViewType.CURRENT, extras, null, null);
+                },
+                now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH));
+        datePickerDialog.show();
     }
 
     @Override

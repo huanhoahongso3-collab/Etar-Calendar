@@ -5,7 +5,12 @@
 
     <!-- One UI style accent (Samsung OneUI 7 signature blue, dark mode) -->
     <color name="oneui_primary">#4DA6FF</color>
-    <color name="oneui_today_circle">#4DA6FF</color>
-    <color name="oneui_today_number_text">#0a0a0a</color>
+    <color name="oneui_today_circle">@color/oneui_primary</color>
+    <color name="oneui_today_number_text">#ffffff</color>
+    <color name="oneui_fab_background">#2c2c30</color>
+    <color name="oneui_fab_icon">@color/oneui_primary</color>
+    <color name="oneui_pill_button_background">#33363a</color>
+    <color name="oneui_pill_button_text">#ffffff</color>
+    <color name="oneui_weekend_text">#ff7a72</color>
 
 </resources>

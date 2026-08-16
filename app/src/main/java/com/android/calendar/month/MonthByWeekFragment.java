@@ -35,6 +35,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewConfiguration;
+import android.view.animation.DecelerateInterpolator;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -307,6 +308,36 @@ public class MonthByWeekFragment extends SimpleDayPickerFragment implements
 
         if (!mIsMiniMonth) {
             mListView.setBackgroundColor(DynamicThemeKt.getColor(getActivity(), "month_bgcolor"));
+
+            View root = getView();
+            HorizontalMonthSwipeLayout swipeContainer = root == null ? null :
+                    root.findViewById(R.id.month_swipe_container);
+            if (swipeContainer != null) {
+                swipeContainer.setOnMonthSwipeListener(
+                        new HorizontalMonthSwipeLayout.OnMonthSwipeListener() {
+                            @Override
+                            public void onMonthSwipe(int direction) {
+                                animateMonthSwipe(direction);
+                            }
+
+                            @Override
+                            public void onMonthSwipeProgress(float dx) {
+                                if (mListView != null) {
+                                    mListView.setTranslationX(dx);
+                                }
+                            }
+
+                            @Override
+                            public void onMonthSwipeCancelled() {
+                                if (mListView != null) {
+                                    mListView.animate().translationX(0)
+                                            .setDuration(200)
+                                            .setInterpolator(new DecelerateInterpolator())
+                                            .start();
+                                }
+                            }
+                        });
+            }
         }
 
         // To get a smoother transition when showing this fragment, delay loading of events until
@@ -322,6 +353,43 @@ public class MonthByWeekFragment extends SimpleDayPickerFragment implements
         mAdapter.setListView(mListView);
     }
 
+    /**
+     * Slides the current month out and the target month in horizontally,
+     * matching One UI's per-month paging — instead of goTo()'s built-in
+     * "animate" flag, which does the old vertical smooth-scroll-through-
+     * weeks animation and would visually reveal other months mid-transition.
+     *
+     * @param direction -1 for the previous month, +1 for the next month.
+     */
+    private void animateMonthSwipe(final int direction) {
+        if (mListView == null || mListView.getWidth() == 0) return;
+        final float width = mListView.getWidth();
+        final float outX = direction > 0 ? -width : width;
+        // Continue smoothly from wherever the live drag left the view
+        // (onMonthSwipeProgress), rather than snapping back to 0 first —
+        // that snap-then-slide was the source of the "not smooth" jump cut.
+        final float current = mListView.getTranslationX();
+        final long duration = (long) (220 * (1f - Math.abs(current) / width));
+
+        mListView.animate().translationX(outX)
+                .setDuration(Math.max(duration, 80))
+                .setInterpolator(new DecelerateInterpolator())
+                .withEndAction(() -> {
+            Time target = new Time(mSelectedDay.getTimezone());
+            target.set(mSelectedDay);
+            target.setDay(1);
+            target.setMonth(target.getMonth() + direction);
+            target.normalize();
+            // animate=false: snap directly, no vertical scroll-through.
+            goTo(target.toMillis(), false, true, true);
+
+            mListView.setTranslationX(-outX);
+            mListView.animate().translationX(0).setDuration(220)
+                    .setInterpolator(new DecelerateInterpolator())
+                    .withEndAction(null).start();
+        }).start();
+    }
+
     @Override
     protected void setUpHeader() {
         if (mIsMiniMonth) {
@@ -332,7 +400,7 @@ public class MonthByWeekFragment extends SimpleDayPickerFragment implements
         mDayLabels = new String[7];
         for (int i = Calendar.SUNDAY; i <= Calendar.SATURDAY; i++) {
             mDayLabels[i - Calendar.SUNDAY] = DateUtils.getDayOfWeekString(i,
-                    DateUtils.LENGTH_MEDIUM).toUpperCase();
+                    DateUtils.LENGTH_SHORTEST).toUpperCase();
         }
     }
 

@@ -8,52 +8,85 @@
     android:fitsSystemWindows="true"
     tools:context="com.android.calendar.AllInOneActivity">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <!-- Plain RelativeLayout instead of CoordinatorLayout+AppBarLayout: SESL's
+         coordinatorlayout replacement is backed by ScrollView internally, not
+         the standard behavior-dispatching ViewGroup stock CoordinatorLayout
+         uses, so AppBarLayout's scrolling-behavior offset math breaks (the
+         AppBarLayout measures far taller than its Toolbar child, pushing all
+         content down and leaving a large blank gap). Our toolbar never
+         collapses/scrolls, so we don't need CoordinatorLayout at all. -->
+    <RelativeLayout
         android:id="@+id/coordinator_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:background="?attr/android:windowBackground"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:minHeight="?attr/actionBarSize"
+            app:menu="@menu/all_in_one_title_bar"
+            app:navigationIcon="@drawable/ic_menu_navigator" />
+
+        <!-- One UI's month/week/day header is two-tier: an icon-only toolbar
+             row, then a big bold centered title (e.g. "AUG") on its own row
+             below it, rather than the title sitting inline in the toolbar. -->
+        <TextView
+            android:id="@+id/month_title_big"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/toolbar"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            android:fontFamily="sans-serif-medium"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="?android:attr/textColorPrimary"
+            tools:text="AUG" />
 
         <include
             android:id="@+id/include"
             layout="@layout/all_in_one"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
-        <com.google.android.material.appbar.AppBarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:background="?attr/android:windowBackground"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:minHeight="?attr/actionBarSize"
-                app:menu="@menu/all_in_one_title_bar"
-                app:navigationIcon="@drawable/ic_menu_navigator" />
-        </com.google.android.material.appbar.AppBarLayout>
+            android:layout_below="@id/month_title_big" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/floating_action_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
             android:layout_margin="@dimen/fab_margin"
-            android:backgroundTint="@color/colorAccent"
+            android:backgroundTint="@color/oneui_fab_background"
             android:contentDescription="@string/event_create"
             android:src="@drawable/ic_add_event"
             app:borderWidth="0dp"
-            app:layout_anchorGravity="bottom|right|end"
-            app:tint="@android:color/white" />
+            app:elevation="2dp"
+            app:tint="@color/oneui_fab_icon" />
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </RelativeLayout>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation_view"
-        android:layout_width="wrap_content"
+        android:layout_width="300dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
+        android:background="@drawable/oneui_drawer_background"
+        app:headerLayout="@layout/nav_header_oneui"
+        app:itemIconPadding="16dp"
+        app:itemIconSize="26dp"
+        app:itemIconTint="@color/oui_des_drawerlayout_header_icon_tint"
+        app:itemTextAppearance="@style/OneUiDrawerItemText"
+        app:itemTextColor="@color/oui_des_drawer_menu_item_text_color"
+        app:itemHorizontalPadding="20dp"
+        app:itemBackground="@drawable/oui_des_drawer_menu_item_bg"
+        app:itemShapeInsetStart="12dp"
+        app:itemShapeInsetEnd="12dp"
+        app:itemShapeInsetTop="2dp"
+        app:itemShapeInsetBottom="2dp"
         app:menu="@menu/calendar_view" />
 </androidx.drawerlayout.widget.DrawerLayout>

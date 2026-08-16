@@ -28,6 +28,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.provider.CalendarContract.Attendees;
@@ -467,6 +468,7 @@ public class MonthWeekEventsView extends SimpleWeekView {
             }
             drawDNA(canvas);
         }
+        drawLunarLabels(canvas);
         drawClick(canvas);
     }
 
@@ -491,6 +493,15 @@ public class MonthWeekEventsView extends SimpleWeekView {
 
     @Override
     protected void drawDaySeparators(Canvas canvas) {
+        // One UI's month grid only shows a horizontal rule between weeks, no
+        // vertical rules between day columns.
+        if (ThemeUtils.isOneUiStyleEnabled(getContext())) {
+            p.setColor(mDaySeparatorInnerColor);
+            p.setStrokeWidth(mDaySeparatorInnerWidth);
+            canvas.drawLine(0, 0, mWidth, 0, p);
+            return;
+        }
+
         final int coordinatesPerLine = 4;
         // There are mNumDays - 1 vertical lines and 1 horizontal, so the total is mNumDays
         float[] lines = new float[mNumDays * coordinatesPerLine];
@@ -562,6 +573,9 @@ public class MonthWeekEventsView extends SimpleWeekView {
             p.setColor(mMonthBGOtherColor);
             canvas.drawRect(r, p);
         }
+        // One UI marks today with a small filled badge directly behind the
+        // day number (drawn in drawWeekNums, where the number itself is
+        // drawn) rather than any whole-cell highlight — see drawWeekNums().
         if (mHasToday && !ThemeUtils.isOneUiStyleEnabled(mContext)) {
             int selectedColor = ContextCompat.getColor(mContext, DynamicThemeKt.getColorId(DynamicThemeKt.getPrimaryColor(mContext)));
 
@@ -577,9 +591,34 @@ public class MonthWeekEventsView extends SimpleWeekView {
         }
     }
 
-    // Draw the "clicked" color on the tapped day
+    // Draw the "clicked"/selected indicator on the tapped day
     private void drawClick(Canvas canvas) {
-        if (mClickedDayIndex != -1) {
+        if (mClickedDayIndex == -1) return;
+
+        if (ThemeUtils.isOneUiStyleEnabled(mContext)) {
+            // One UI marks the selected day with a thin rounded-rect outline
+            // around the whole cell (not a filled highlight).
+            float inset = mTodayHighlightWidth * 1.5f;
+            float left = computeDayLeftPosition(mClickedDayIndex) + inset;
+            float right = computeDayLeftPosition(mClickedDayIndex + 1) - inset;
+            float top = mDaySeparatorInnerWidth + inset;
+            float bottom = mHeight - inset;
+            // Matches the real app's month_today_round_rect_corner_radius (5dp)
+            float corner = 5f * getResources().getDisplayMetrics().density;
+
+            Paint.Style savedStyle = p.getStyle();
+            int savedColor = p.getColor();
+            float savedStrokeWidth = p.getStrokeWidth();
+
+            p.setStyle(Paint.Style.STROKE);
+            p.setStrokeWidth(mTodayHighlightWidth);
+            p.setColor(ContextCompat.getColor(mContext, R.color.oneui_today_circle));
+            canvas.drawRoundRect(left, top, right, bottom, corner, corner, p);
+
+            p.setStyle(savedStyle);
+            p.setColor(savedColor);
+            p.setStrokeWidth(savedStrokeWidth);
+        } else {
             int alpha = p.getAlpha();
             p.setColor(mClickedDayColor);
             p.setAlpha(mClickedAlpha);
@@ -641,18 +680,29 @@ public class MonthWeekEventsView extends SimpleWeekView {
                 mMonthNumPaint.setColor(isFocusMonth ? mMonthNumColor : mMonthNumOtherColor);
             }
             x = computeDayLeftPosition(i - offset) - (mSidePaddingMonthNumber);
+            // One UI's month grid leaves days from adjacent months
+            // completely blank rather than showing them dimmed.
+            if (oneUiStyle && !mFocusDay[i]) {
+                continue;
+            }
             if (isToday && oneUiStyle) {
+                // Small filled rounded-square badge directly behind the
+                // number, matching the real app (confirmed live: today gets
+                // a filled accent badge, not just an outline — the outline
+                // is actually the *selected/tapped* day's indicator).
                 float textWidth = mMonthNumPaint.measureText(mDayNumbers[i]);
+                float halfSize = mMonthNumHeight * 0.52f;
                 float centerX = x - textWidth / 2f;
                 float centerY = y + (mMonthNumPaint.ascent() + mMonthNumPaint.descent()) / 2f;
-                float radius = mMonthNumHeight * 0.62f;
-                int savedColor = p.getColor();
+                float corner = 6f * getResources().getDisplayMetrics().density;
                 Paint.Style savedStyle = p.getStyle();
+                int savedColor = p.getColor();
                 p.setStyle(Paint.Style.FILL);
                 p.setColor(ContextCompat.getColor(mContext, R.color.oneui_today_circle));
-                canvas.drawCircle(centerX, centerY, radius, p);
-                p.setColor(savedColor);
+                canvas.drawRoundRect(centerX - halfSize, centerY - halfSize,
+                        centerX + halfSize, centerY + halfSize, corner, corner, p);
                 p.setStyle(savedStyle);
+                p.setColor(savedColor);
             }
             canvas.drawText(mDayNumbers[i], x, y, mMonthNumPaint);
             if (isBold) {
@@ -680,29 +730,77 @@ public class MonthWeekEventsView extends SimpleWeekView {
                 }
             }
 
-            if (VietnameseLunarUtils.isEnabled(getContext())) {
+        }
+    }
+
+    // Lunar date labels are drawn in a separate pass, after drawEvents(), so
+    // that events (drawn later in onDraw) never paint over/hide them.
+    protected void drawLunarLabels(Canvas canvas) {
+        boolean showVietnamese = VietnameseLunarUtils.isEnabled(getContext());
+        boolean showChinese = LunarUtils.showLunar(getContext());
+        if (!showVietnamese && !showChinese) return;
+
+        int i = 0;
+        int offset = -1;
+        int x;
+        int numCount = mNumDays;
+        if (mShowWeekNum) {
+            numCount++;
+            i++;
+            offset++;
+        }
+
+        int y = mMonthNumAscentHeight + mTopPaddingMonthNumber;
+
+        int julianMonday = Utils.getJulianMondayFromWeeksSinceEpoch(mWeek);
+        Time time = new Time(mTimeZone);
+        time.setJulianDay(julianMonday);
+
+        boolean oneUiStyle = ThemeUtils.isOneUiStyleEnabled(getContext());
+        for (; i < numCount; i++) {
+            // Days from adjacent months are left blank entirely under One
+            // UI style — see the matching skip in drawWeekNums().
+            if (oneUiStyle && !mFocusDay[i]) continue;
+
+            x = computeDayLeftPosition(i - offset) - (mSidePaddingMonthNumber);
+
+            int year = time.getYear();
+            int month = time.getMonth();
+            int julianMondayDay = time.getDay();
+            int monthDay = Integer.parseInt(mDayNumbers[i]);
+            if (monthDay != julianMondayDay) {
+                int offsetDay = monthDay - julianMondayDay;
+                if (offsetDay > 6) {
+                    month = month - 1;
+                    if (month < 0) {
+                        month = 11;
+                        year = year - 1;
+                    }
+                } else if (offsetDay < -6) {
+                    month = month + 1;
+                    if (month > 11) {
+                        month = 0;
+                        year = year + 1;
+                    }
+                }
+            }
+
+            if (showVietnamese) {
                 String lunarLabel = VietnameseLunarUtils.getShortLunarLabel(year, month, monthDay);
                 if (!TextUtils.isEmpty(lunarLabel)) {
                     float originalTextSize = mMonthNumPaint.getTextSize();
                     mMonthNumPaint.setTextSize(mTextSizeLunar);
-                    Resources res = getResources();
-                    int mOrientation = res.getConfiguration().orientation;
-
-                    int infoX;
-                    int infoY;
-                    if (mOrientation == Configuration.ORIENTATION_LANDSCAPE) {
-                        infoX = x - mMonthNumHeight - mTopPaddingMonthNumber;
-                        infoY = y;
-                    } else {
-                        infoX = x;
-                        infoY = y + mMonthNumHeight + mLunarPaddingLunar;
-                    }
+                    // Directly below the day number, matching the real app.
+                    // DayBoxBoundaries reserves this exact row so events
+                    // never start until below it.
+                    int infoX = x;
+                    int infoY = y + mMonthNumHeight + mLunarPaddingLunar;
                     canvas.drawText(lunarLabel, infoX, infoY, mMonthNumPaint);
 
                     // restore the text size.
                     mMonthNumPaint.setTextSize(originalTextSize);
                 }
-            } else if (LunarUtils.showLunar(getContext())) {
+            } else {
                 ArrayList<String> infos = new ArrayList<String>();
                 LunarUtils.get(getContext(), year, month, monthDay,
                         LunarUtils.FORMAT_LUNAR_SHORT | LunarUtils.FORMAT_MULTI_FESTIVAL, false,
@@ -1096,16 +1194,26 @@ public class MonthWeekEventsView extends SimpleWeekView {
          * @param boxBoundaries
          */
         public void drawDay(Canvas canvas, DayBoxBoundaries boxBoundaries) {
-            for (FormattedEventBase event : mEventDay) {
-                if (eventShouldBeSkipped(event)) {
+            boolean oneUiStyle = ThemeUtils.isOneUiStyleEnabled(getContext());
+            int focusIndex = mDay + (mShowWeekNum ? 1 : 0);
+            boolean isOtherMonthDay = oneUiStyle && focusIndex >= 0
+                    && focusIndex < mFocusDay.length && !mFocusDay[focusIndex];
+            if (isOtherMonthDay) {
+                for (FormattedEventBase event : mEventDay) {
                     event.skip(mViewPreferences);
-                } else {
-                    event.draw(canvas, mViewPreferences, mDay);
                 }
-            }
-            if (moreLinesWillBeDisplayed()) {
-                int hiddenEvents = mEventsByHeight.get(0).size();
-                drawMoreEvents(canvas, hiddenEvents, boxBoundaries.getX());
+            } else {
+                for (FormattedEventBase event : mEventDay) {
+                    if (eventShouldBeSkipped(event)) {
+                        event.skip(mViewPreferences);
+                    } else {
+                        event.draw(canvas, mViewPreferences, mDay);
+                    }
+                }
+                if (moreLinesWillBeDisplayed()) {
+                    int hiddenEvents = mEventsByHeight.get(0).size();
+                    drawMoreEvents(canvas, hiddenEvents, boxBoundaries.getX());
+                }
             }
             boxBoundaries.nextDay();
         }
@@ -1309,6 +1417,13 @@ public class MonthWeekEventsView extends SimpleWeekView {
             mYOffset = 0;
             mX = 1;
             mY = mEventYOffsetPortrait + mMonthNumHeight + mTopPaddingMonthNumber;
+            if (VietnameseLunarUtils.isEnabled(getContext())) {
+                // Reserve a row below the day number for the lunar date
+                // (matches the offset the lunar label is actually drawn at
+                // in drawLunarLabels()), so events always start below it
+                // instead of overlapping it.
+                mY += mMonthNumHeight + mLunarPaddingLunar;
+            }
             mRightEdge = - 1;
         }
 
@@ -1571,7 +1686,13 @@ public class MonthWeekEventsView extends SimpleWeekView {
             mBoundaries.setRectangle(mFormat.getDaySpan(day), mFormat.getEventLines());
             mEventSquarePaint.setStyle(getRectanglePaintStyle());
             mEventSquarePaint.setColor(getRectangleColor());
-            canvas.drawRect(r, mEventSquarePaint);
+            if (ThemeUtils.isOneUiStyleEnabled(mContext)) {
+                // Matches the real app's month_event_exist_rect_corner_radius (5dp)
+                float corner = 5f * getResources().getDisplayMetrics().density;
+                canvas.drawRoundRect(new RectF(r), corner, corner, mEventSquarePaint);
+            } else {
+                canvas.drawRect(r, mEventSquarePaint);
+            }
         }
 
         protected int getAvailableSpaceForText(int spanningDays) {
@@ -1826,6 +1947,14 @@ public class MonthWeekEventsView extends SimpleWeekView {
         int dayPosition = getDayIndexFromLocation(x);
         if (dayPosition == -1) {
             return null;
+        }
+        if (ThemeUtils.isOneUiStyleEnabled(getContext())) {
+            int focusIndex = dayPosition + (mShowWeekNum ? 1 : 0);
+            if (focusIndex >= 0 && focusIndex < mFocusDay.length && !mFocusDay[focusIndex]) {
+                // Under One UI style, adjacent-month day cells are blank and
+                // must not be tappable/selectable.
+                return null;
+            }
         }
         int day = mFirstJulianDay + dayPosition;
 

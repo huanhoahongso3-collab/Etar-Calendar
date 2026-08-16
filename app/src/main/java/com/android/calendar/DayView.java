@@ -34,6 +34,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -83,6 +84,7 @@ import com.android.calendar.CalendarController.ViewType;
 import com.android.calendar.settings.GeneralPreferences;
 import com.android.calendar.calendarcommon2.Time;
 import com.android.calendar.theme.DynamicThemeKt;
+import com.android.calendar.theme.ThemeUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
@@ -758,7 +760,7 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
 
         HOURS_MARGIN = HOURS_LEFT_MARGIN + HOURS_RIGHT_MARGIN;
         DAY_HEADER_HEIGHT = mNumDays == 1 ? ONE_DAY_HEADER_HEIGHT : MULTI_DAY_HEADER_HEIGHT;
-        if ((VietnameseLunarUtils.isEnabled(mContext) || LunarUtils.showLunar(mContext)) && mNumDays != 1) {
+        if (VietnameseLunarUtils.isEnabled(mContext) || LunarUtils.showLunar(mContext)) {
             DAY_HEADER_HEIGHT = (int) (DAY_HEADER_HEIGHT + DAY_HEADER_FONT_SIZE + 2);
         }
 
@@ -2558,14 +2560,15 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
         int todayIndex = mTodayJulianDay - mFirstJulianDay;
         // Draw day of the month
         String dateNumStr = String.valueOf(dateNum);
+        boolean showAnyLunar = VietnameseLunarUtils.isEnabled(mContext) || LunarUtils.showLunar(mContext);
         if (mNumDays > 1) {
-            float y = -1;
-            boolean showAnyLunar = VietnameseLunarUtils.isEnabled(mContext) || LunarUtils.showLunar(mContext);
-            if (showAnyLunar) {
-                y = DAY_HEADER_HEIGHT - DAY_HEADER_BOTTOM_MARGIN - DATE_HEADER_FONT_SIZE - 2;
-            } else {
-                y = DAY_HEADER_HEIGHT - DAY_HEADER_BOTTOM_MARGIN;
-            }
+            // Date number sits at its normal (non-lunar) position; the extra
+            // height DAY_HEADER_HEIGHT gained for showAnyLunar is reserved
+            // below it for the lunar row, so nothing overlaps the date or
+            // the day-of-week label above it.
+            float y = DAY_HEADER_HEIGHT - DAY_HEADER_BOTTOM_MARGIN
+                    - (showAnyLunar ? DAY_HEADER_FONT_SIZE + 2 : 0);
+
             // Draw day of the month
             x = computeDayLeftPosition(day) + DAY_HEADER_RIGHT_MARGIN;
             p.setTextAlign(Align.LEFT);
@@ -2576,12 +2579,12 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
             canvas.drawText(dateNumStr, x, y, p);
 
             // Draw day of the week
-            y -= DATE_HEADER_FONT_SIZE;
+            float dayOfWeekY = y - DATE_HEADER_FONT_SIZE;
             p.setTextSize(DAY_HEADER_FONT_SIZE);
             p.setTypeface(Typeface.DEFAULT);
-            canvas.drawText(dayStr, x, y, p);
+            canvas.drawText(dayStr, x, dayOfWeekY, p);
 
-            // To show the lunar info.
+            // To show the lunar info, in the space reserved below the date.
             if (showAnyLunar) {
                 // adjust the year and month
                 int month = mBaseDate.getMonth();
@@ -2607,6 +2610,10 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
                 }
             }
         } else {
+            // When lunar is on, the header grew by DAY_HEADER_FONT_SIZE + 2
+            // (see the DAY_HEADER_HEIGHT setup) — reserve that extra space
+            // below the date/weekday row for the lunar label instead of
+            // squeezing it in beside the date.
             float y = ONE_DAY_HEADER_HEIGHT - DAY_HEADER_ONE_DAY_BOTTOM_MARGIN;
             p.setTextAlign(Align.LEFT);
 
@@ -2618,10 +2625,41 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
             canvas.drawText(dayStr, x, y, p);
 
             // Draw day of the month
-            x += p.measureText(dayStr) + DAY_HEADER_ONE_DAY_RIGHT_MARGIN;
+            float dateX = x + p.measureText(dayStr) + DAY_HEADER_ONE_DAY_RIGHT_MARGIN;
             p.setTextSize(DATE_HEADER_FONT_SIZE);
             p.setTypeface(todayIndex == day ? mBold : Typeface.DEFAULT);
-            canvas.drawText(dateNumStr, x, y, p);
+            canvas.drawText(dateNumStr, dateX, y, p);
+
+            // Show the lunar date under the day header, single-day view.
+            if (showAnyLunar) {
+                int month = mBaseDate.getMonth();
+                int year = mBaseDate.getYear();
+                if (dateNum > mMonthLength || dateNum < mFirstVisibleDate) {
+                    month = month + 1;
+                    if (month > 11) {
+                        month = 0;
+                        year = year + 1;
+                    }
+                }
+
+                String lunarInfo;
+                if (VietnameseLunarUtils.isEnabled(mContext)) {
+                    lunarInfo = VietnameseLunarUtils.getShortLunarLabel(year, month, dateNum);
+                } else {
+                    lunarInfo = LunarUtils.get(mContext, year, month, dateNum,
+                            LunarUtils.FORMAT_LUNAR_SHORT | LunarUtils.FORMAT_ONE_FESTIVAL,
+                            false, null);
+                }
+                if (!TextUtils.isEmpty(lunarInfo)) {
+                    float originalTextSize = p.getTextSize();
+                    Typeface originalTypeface = p.getTypeface();
+                    p.setTextSize(DAY_HEADER_FONT_SIZE);
+                    p.setTypeface(Typeface.DEFAULT);
+                    canvas.drawText(lunarInfo, x, y + DAY_HEADER_FONT_SIZE + 2, p);
+                    p.setTextSize(originalTextSize);
+                    p.setTypeface(originalTypeface);
+                }
+            }
         }
     }
 
@@ -2652,6 +2690,24 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
             canvas.drawLines(mLines, 0, linesIndex, p);
             linesIndex = 0;
             p.setColor(mCalendarGridLineInnerVerticalColor);
+        }
+
+        // One UI's grid also has a dotted half-hour line between each pair
+        // of solid hour lines.
+        if (ThemeUtils.isOneUiStyleEnabled(mContext)) {
+            android.graphics.PathEffect savedEffect = p.getPathEffect();
+            boolean savedAntiAlias = p.isAntiAlias();
+            float dot = mScale * 2f;
+            p.setColor(mCalendarGridLineInnerHorizontalColor);
+            p.setPathEffect(new android.graphics.DashPathEffect(new float[]{dot, dot}, 0));
+            p.setAntiAlias(true);
+            float halfY = deltaY / 2f;
+            for (int hour = 0; hour < 24; hour++) {
+                canvas.drawLine(GRID_LINE_LEFT_MARGIN, halfY, stopX, halfY, p);
+                halfY += deltaY;
+            }
+            p.setPathEffect(savedEffect);
+            p.setAntiAlias(savedAntiAlias);
         }
 
         // Draw the inner vertical grid lines
@@ -3517,6 +3573,17 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
         setSelectedEvent(startEvent);
     }
 
+    // One UI's day/week event blocks have rounded corners rather than square ones.
+    private void drawEventBoxRect(Canvas canvas, Rect r, Paint p) {
+        if (ThemeUtils.isOneUiStyleEnabled(mContext)) {
+            // Matches the real app's timeline_event_box_radius (3dp)
+            float corner = 3f * getResources().getDisplayMetrics().density;
+            canvas.drawRoundRect(new RectF(r), corner, corner, p);
+        } else {
+            canvas.drawRect(r, p);
+        }
+    }
+
     private void drawEventRect(Event event, Canvas canvas, Paint p, int visibleLeft, int visibleTop,
             int visibleRight, int visibleBot) {
         // Draw the Event Rect
@@ -3570,12 +3637,12 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
             canvas.save();
             if (canvas.clipRect(visibleLeft, visibleTop, visibleRight, visibleBot)) {
                 p.setShadowLayer(STAGGERED_EVENT_SHADOW_WIDTH, 0f, 0f, mStaggeredEventShadowColor);
-                canvas.drawRect(r, p);
+                drawEventBoxRect(canvas, r, p);
                 p.clearShadowLayer();
             }
             canvas.restore();
         } else {
-            canvas.drawRect(r, p);
+            drawEventBoxRect(canvas, r, p);
         }
 
         // Restore paint settings
@@ -3600,7 +3667,7 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
 
             if (paintIt) {
                 p.setColor(color);
-                canvas.drawRect(r, p);
+                drawEventBoxRect(canvas, r, p);
             }
             p.setAntiAlias(true);
         }

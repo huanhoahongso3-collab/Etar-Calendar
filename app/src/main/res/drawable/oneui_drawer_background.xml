@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One UI's navigation drawer is a floating rounded card inset from the
+     screen edges, not an edge-to-edge square panel. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/oui_des_drawerlayout_drawer_bg_color" />
+    <corners
+        android:topLeftRadius="0dp"
+        android:bottomLeftRadius="0dp"
+        android:topRightRadius="26dp"
+        android:bottomRightRadius="26dp" />
+</shape>

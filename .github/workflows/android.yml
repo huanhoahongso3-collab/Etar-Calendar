@@ -28,6 +28,9 @@ jobs:
       - name: Validate Gradle Wrapper
         uses: gradle/actions/wrapper-validation@v6
       - name: Build with Gradle
+        env:
+          GPR_USER: ${{ secrets.USERNAME }}
+          GPR_TOKEN: ${{ secrets.TOKEN }}
         run: |
           ./gradlew :app:assembleDebug
       - name: Upload APK

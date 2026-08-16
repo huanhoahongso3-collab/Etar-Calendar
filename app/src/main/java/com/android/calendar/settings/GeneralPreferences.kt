@@ -39,6 +39,8 @@ import java.util.Calendar
 import java.util.Locale
 import android.util.SparseIntArray
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.preference.CheckBoxPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
@@ -63,10 +65,10 @@ class GeneralPreferences : PreferenceFragmentCompat(),
         OnSharedPreferenceChangeListener, Preference.OnPreferenceChangeListener,
         TimeZonePickerDialog.OnTimeZoneSetListener {
 
+    private lateinit var languagePref: ListPreference
     private lateinit var themePref: ListPreference
     private lateinit var realEventColors: SwitchPreference
     private lateinit var pureBlackNightModePref: SwitchPreference
-    private lateinit var oneUiStylePref: SwitchPreference
     private lateinit var doNotCheckBatteryOptimizationPref: SwitchPreference
     private lateinit var defaultStartPref: ListPreference
     private lateinit var hideDeclinedPref: SwitchPreference
@@ -110,10 +112,10 @@ class GeneralPreferences : PreferenceFragmentCompat(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        languagePref = preferenceScreen.findPreference(KEY_LANGUAGE_PREF)!!
         themePref = preferenceScreen.findPreference(KEY_THEME_PREF)!!
         realEventColors = preferenceScreen.findPreference(KEY_REAL_EVENT_COLORS)!!
         pureBlackNightModePref = preferenceScreen.findPreference(KEY_PURE_BLACK_NIGHT_MODE)!!
-        oneUiStylePref = preferenceScreen.findPreference(KEY_ONEUI_STYLE)!!
         doNotCheckBatteryOptimizationPref = preferenceScreen.findPreference(KEY_DO_NOT_CHECK_BATTERY_OPTIMIZATION)!!
         defaultStartPref = preferenceScreen.findPreference(KEY_DEFAULT_START)!!
         hideDeclinedPref = preferenceScreen.findPreference(KEY_HIDE_DECLINED)!!
@@ -165,6 +167,7 @@ class GeneralPreferences : PreferenceFragmentCompat(),
         buildDefaultReminderPrefEntries()
         handleUseCustomSnoozeDelayVisibility()
         defaultEventDurationPref.summary = defaultEventDurationPref.entry
+        languagePref.summary = languagePref.entry
         themePref.summary = themePref.entry
         weekStartPref.summary = weekStartPref.entry
         dayWeekPref.summary = dayWeekPref.entry
@@ -225,9 +228,9 @@ class GeneralPreferences : PreferenceFragmentCompat(),
      * Sets up all the preference change listeners to use the specified listener.
      */
     private fun setPreferenceListeners(listener: Preference.OnPreferenceChangeListener) {
+        languagePref.onPreferenceChangeListener = listener
         themePref.onPreferenceChangeListener = listener
         pureBlackNightModePref.onPreferenceChangeListener = listener
-        oneUiStylePref.onPreferenceChangeListener = listener
         doNotCheckBatteryOptimizationPref.onPreferenceChangeListener = listener
         defaultStartPref.onPreferenceChangeListener = listener
         hideDeclinedPref.onPreferenceChangeListener = listener
@@ -277,10 +280,6 @@ class GeneralPreferences : PreferenceFragmentCompat(),
                     a.recreate()
                 }
             }
-            KEY_ONEUI_STYLE -> {
-                Utils.sendUpdateWidgetIntent(a)
-                a.recreate()
-            }
             KEY_REAL_EVENT_COLORS -> {
                 Utils.sendUpdateWidgetIntent(a)
             }
@@ -309,6 +308,17 @@ class GeneralPreferences : PreferenceFragmentCompat(),
                     Utils.setTimeZone(activity, tz)
                     return true
                 }
+            }
+            languagePref -> {
+                val newLanguage = newValue as String
+                languagePref.value = newLanguage
+                languagePref.summary = languagePref.entry
+                val locales = if (newLanguage.isEmpty()) {
+                    LocaleListCompat.getEmptyLocaleList()
+                } else {
+                    LocaleListCompat.forLanguageTags(newLanguage)
+                }
+                AppCompatDelegate.setApplicationLocales(locales)
             }
             themePref -> {
                 themePref.value = newValue as String
@@ -515,11 +525,11 @@ class GeneralPreferences : PreferenceFragmentCompat(),
 
     companion object {
         // Preference keys
+        const val KEY_LANGUAGE_PREF = "pref_language"
         const val KEY_THEME_PREF = "pref_theme"
         const val KEY_REAL_EVENT_COLORS = "pref_real_event_colors"
         const val KEY_DO_NOT_CHECK_BATTERY_OPTIMIZATION = "pref_do_not_check_battery_optimization"
         const val KEY_PURE_BLACK_NIGHT_MODE = "pref_pure_black_night_mode"
-        const val KEY_ONEUI_STYLE = "pref_oneui_style"
         const val KEY_DEFAULT_START = "preferences_default_start"
         const val KEY_HIDE_DECLINED = "preferences_hide_declined"
         const val KEY_STAGGERED_DISPLAY = "preferences_staggered_display"

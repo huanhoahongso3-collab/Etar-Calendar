@@ -120,6 +120,9 @@
          Month view. -->
     <string name="month_view">"Month"</string>
     <!-- This is a label on a menu item. Pressing this menu item displays the
+         Year view. -->
+    <string name="year_view">"Year"</string>
+    <!-- This is a label on a menu item. Pressing this menu item displays the
          details of an event. -->
     <string name="event_view">"View event"</string>
     <!-- This is a label on a menu item. Pressing this menu item allows the
@@ -463,6 +466,9 @@
          related to app theme -->
     <string name="preferences_theme">Theme</string>
     <string name="preferences_system_theme">System default</string>
+    <!-- Title of the settings item to choose the app's display language [CHAR LIMIT=40] -->
+    <string name="preferences_language_title">Language</string>
+    <string name="preferences_language_system_default">System default</string>
     <string name="preferences_light_theme">Light</string>
     <string name="preferences_dark_theme">Dark</string>
     <string name="preferences_black_theme">Black</string>

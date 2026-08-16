@@ -355,4 +355,17 @@
     <string name="chips_action_cancel" msgid="2582257014578396781">"Hủy"</string>
     <string name="chips_permission_text" msgid="5601284803674008863">"Cho phép đề xuất liên hệ"</string>
     <string name="no_snooze_label">Không có</string>
+    <string name="cancel">Hủy</string>
+    <string name="discard">Bỏ qua</string>
+    <string name="discard_event_changes">Bạn có muốn bỏ qua thay đổi?</string>
+    <string name="preferences_language_title">Ngôn ngữ</string>
+    <string name="preferences_manage_notifications">Quản lý thông báo</string>
+    <string name="preferences_staggered_display_title">Hiển thị so le</string>
+    <string name="preferences_staggered_display_summary">Hiển thị các sự kiện chồng chéo theo bố cục so le</string>
+    <string name="year_view">"Năm"</string>
+    <string name="cal_export_error">Không thể xuất sự kiện</string>
+    <string name="cal_export_success">Xuất sự kiện thành công</string>
+    <string name="calendars">Lịch</string>
+    <string name="preferences_do_not_check_battery_optimization">Không kiểm tra tối ưu hóa pin</string>
+    <string name="preferences_do_not_check_battery_optimization_summary">Sử dụng theo rủi ro của bạn! Thông báo sẽ không còn hoạt động, tiện ích sẽ không còn cập nhật và các dịch vụ nền có thể bị lỗi. Nhưng bạn sẽ không bị hỏi lại về việc bật dịch vụ nền.</string>
 </resources>

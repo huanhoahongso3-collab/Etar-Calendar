@@ -18,6 +18,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory app:title="@string/preferences_general_title">
         <ListPreference
+            app:key="pref_language"
+            app:title="@string/preferences_language_title"
+            app:entries="@array/pref_language_entries"
+            app:entryValues="@array/pref_language_values"
+            app:defaultValue="" />
+        <ListPreference
             app:key="pref_theme"
             app:title="@string/preferences_theme"
             app:entries="@array/pref_theme_entries"
@@ -27,11 +33,6 @@
             app:key="pref_pure_black_night_mode"
             app:defaultValue="false"
             app:title="@string/preferences_pure_black_night_mode" />
-        <SwitchPreference
-            app:key="pref_oneui_style"
-            app:defaultValue="false"
-            app:title="@string/preferences_oneui_style_title"
-            app:summary="@string/preferences_oneui_style_summary" />
         <SwitchPreference
             app:key="pref_real_event_colors"
             app:defaultValue="false"

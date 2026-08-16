@@ -16,6 +16,25 @@ workRuntime = "2.11.2"
 androidxConcurrent = "1.3.0"
 androidxTest = "1.7.0"
 
+# OneUI 8 (SESL8) design system — versions pinned to match the combo tested by
+# https://github.com/tribalfs/oneui-design (main/oneui8 branch)
+oneuiDesign = "0.9.4+oneui8"
+oneuiIcons = "1.1.0"
+seslCore = "1.17.0+1.0.7-sesl8+rev1"
+seslCoreKtx = "1.17.0+1.0.0-sesl8+rev0"
+seslAppcompat = "1.7.1+1.0.21-sesl8+rev8"
+seslFragment = "1.8.9+1.0.5-sesl8+rev1"
+seslMaterial = "1.12.0+1.0.32-sesl8+rev3"
+seslPreference = "1.2.1+1.0.0-sesl8+rev1"
+seslRecyclerview = "1.4.0+1.0.12-sesl8+rev3"
+seslDrawerlayout = "1.2.0+1.0.0-sesl8+rev0"
+seslCoordinatorlayout = "1.3.0+1.0.0-sesl8+rev0"
+seslCustomview = "1.2.0-rc01+1.0.0-sesl8+rev0"
+seslSlidingpanelayout = "1.2.0+1.0.4-sesl8+rev1"
+seslSwiperefreshlayout = "1.2.0-alpha01+1.0.0-sesl8+rev0"
+seslIndexscroll = "1.0.0+1.0.0-sesl8+rev0"
+seslPickerBasic = "1.0.7+1.0.7-sesl8+rev2"
+
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "compat" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraint" }
@@ -30,6 +49,40 @@ google-android-material = { module = "com.google.android.material:material", ver
 androidx-work-runtime = { module = "androidx.work:work-runtime", version.ref = "workRuntime" }
 androidx-concurrent-futures = { module = "androidx.concurrent:concurrent-futures", version.ref = "androidxConcurrent" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxTest" }
+
+oneui-design = { module = "io.github.tribalfs:oneui-design", version.ref = "oneuiDesign" }
+oneui-icons = { module = "io.github.oneuiproject:icons", version.ref = "oneuiIcons" }
+sesl-core = { module = "sesl.androidx.core:core", version.ref = "seslCore" }
+sesl-core-ktx = { module = "sesl.androidx.core:core-ktx", version.ref = "seslCoreKtx" }
+sesl-appcompat = { module = "sesl.androidx.appcompat:appcompat", version.ref = "seslAppcompat" }
+sesl-fragment = { module = "sesl.androidx.fragment:fragment", version.ref = "seslFragment" }
+sesl-material = { module = "sesl.com.google.android.material:material", version.ref = "seslMaterial" }
+sesl-preference = { module = "sesl.androidx.preference:preference", version.ref = "seslPreference" }
+sesl-recyclerview = { module = "sesl.androidx.recyclerview:recyclerview", version.ref = "seslRecyclerview" }
+sesl-drawerlayout = { module = "sesl.androidx.drawerlayout:drawerlayout", version.ref = "seslDrawerlayout" }
+sesl-coordinatorlayout = { module = "sesl.androidx.coordinatorlayout:coordinatorlayout", version.ref = "seslCoordinatorlayout" }
+sesl-customview = { module = "sesl.androidx.customview:customview", version.ref = "seslCustomview" }
+sesl-slidingpanelayout = { module = "sesl.androidx.slidingpanelayout:slidingpanelayout", version.ref = "seslSlidingpanelayout" }
+sesl-swiperefreshlayout = { module = "sesl.androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "seslSwiperefreshlayout" }
+sesl-indexscroll = { module = "sesl.androidx.indexscroll:indexscroll", version.ref = "seslIndexscroll" }
+sesl-picker-basic = { module = "sesl.androidx.picker:picker-basic", version.ref = "seslPickerBasic" }
+
+[bundles]
+sesl-androidx = [
+    "sesl-core",
+    "sesl-core-ktx",
+    "sesl-appcompat",
+    "sesl-fragment",
+    "sesl-preference",
+    "sesl-recyclerview",
+    "sesl-drawerlayout",
+    "sesl-coordinatorlayout",
+    "sesl-customview",
+    "sesl-slidingpanelayout",
+    "sesl-swiperefreshlayout",
+    "sesl-indexscroll",
+    "sesl-picker-basic",
+]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

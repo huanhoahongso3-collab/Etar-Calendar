@@ -88,7 +88,7 @@
             android:paddingStart="0dp"
             android:paddingEnd="2dp"
             android:prompt="@string/edit_event_calendar_label"
-            android:popupBackground="?attr/colorSurfaceContainer"
+            android:popupBackground="?android:attr/colorBackground"
             app:layout_constraintBottom_toBottomOf="@+id/calendar_selector_group_icon"
             app:layout_constraintEnd_toStartOf="@+id/change_color"
             app:layout_constraintHorizontal_bias="0.0"
@@ -153,13 +153,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/is_all_day_label"
             app:layout_constraintVertical_bias="0.4"
+            app:showText="false"
+            android:textOn=""
+            android:textOff=""
             app:thumbTint="@color/preference_material_switch_color" />
 
         <!-- FROM - Read/write version which launches the date/time pickers -->
 
         <Button
             android:id="@+id/start_date"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/OneUiOutlinedButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="48dp"
@@ -173,7 +176,7 @@
 
         <Button
             android:id="@+id/end_date"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/OneUiOutlinedButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="48dp"
@@ -186,7 +189,7 @@
 
         <Button
             android:id="@+id/start_time"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/OneUiOutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -201,7 +204,7 @@
 
         <Button
             android:id="@+id/end_time"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/OneUiOutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -227,7 +230,7 @@
 
         <Button
             android:id="@+id/timezone_button"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/OneUiOutlinedButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -507,7 +510,7 @@
 
         <Button
             android:id="@+id/rrule"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/OneUiOutlinedButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -556,7 +559,7 @@
 
         <Button
             android:id="@+id/reminder_add"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/OneUiOutlinedButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -596,7 +599,7 @@
             android:contentDescription="@string/accessibility_reminder_showmeas"
             android:entries="@array/availability"
             android:prompt="@string/presence_label"
-            android:popupBackground="?attr/colorSurfaceContainer"
+            android:popupBackground="?android:attr/colorBackground"
             app:layout_constraintBottom_toBottomOf="@+id/availability_icon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/availability_icon"
@@ -632,7 +635,7 @@
             android:contentDescription="@string/accessibility_reminder_privacy"
             android:entries="@array/visibility"
             android:prompt="@string/privacy_label"
-            android:popupBackground="?attr/colorSurfaceContainer"
+            android:popupBackground="?android:attr/colorBackground"
             app:layout_constraintBottom_toBottomOf="@+id/visibility_icon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/visibility_icon"

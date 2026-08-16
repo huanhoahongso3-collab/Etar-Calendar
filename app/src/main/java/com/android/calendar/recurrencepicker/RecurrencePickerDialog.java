@@ -153,6 +153,17 @@ public class RecurrencePickerDialog extends DialogFragment implements OnItemSele
     public RecurrencePickerDialog() {
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Force a plain AppCompat dialog theme instead of inheriting the
+        // app's OneUI theme's dialog theme: under OneUITheme the platform
+        // dialog window ends up with a touch-blocking scrim/inset that
+        // makes every control in this dialog unresponsive (spinner,
+        // radio buttons, Done button all silently no-op on tap).
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.OneUiPlainDialogTheme);
+    }
+
     static public boolean isSupportedMonthlyByNthDayOfWeek(int num) {
         // We only support monthlyByNthDayOfWeek when it is greater then 0 but less then 5.
         // Or if -1 when it is the last monthly day of the week.

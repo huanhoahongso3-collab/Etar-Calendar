@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 
+import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -25,6 +27,9 @@ public class CalendarToolbarHandler {
     private final Formatter mFormatter;
     private AppCompatActivity mContext;
     private Toolbar mToolbar;
+    // One UI's big centered month/day title, shown on its own row below the
+    // icon-only toolbar rather than as the toolbar's own inline title.
+    private TextView mBigTitle;
     private int mCurrentViewType;
     // The current selected event's time, used to calculate the date and day of the week
     // for the buttons.
@@ -42,8 +47,14 @@ public class CalendarToolbarHandler {
 
 
     public CalendarToolbarHandler(AppCompatActivity context, Toolbar toolbar, int defaultViewType) {
+        this(context, toolbar, null, defaultViewType);
+    }
+
+    public CalendarToolbarHandler(AppCompatActivity context, Toolbar toolbar, TextView bigTitle,
+            int defaultViewType) {
         mContext = context;
         mToolbar = toolbar;
+        mBigTitle = bigTitle;
         mCurrentViewType = defaultViewType;
 
         mMidnightHandler = new Handler();
@@ -79,6 +90,29 @@ public class CalendarToolbarHandler {
     }
 
     private void updateTitle() {
+        if (mBigTitle != null) {
+            if (mCurrentViewType == CalendarController.ViewType.YEAR) {
+                // YearViewFragment shows its own year label + prev/next row;
+                // the shared big title would just be a redundant/incorrect
+                // month name on top of it.
+                mBigTitle.setVisibility(android.view.View.GONE);
+                return;
+            }
+            mBigTitle.setVisibility(android.view.View.VISIBLE);
+            // One UI shows a big, short, uppercase title (e.g. "AUG", "16")
+            // on its own row instead of the toolbar's inline title/subtitle.
+            switch (mCurrentViewType) {
+                case CalendarController.ViewType.DAY:
+                case CalendarController.ViewType.AGENDA:
+                    mBigTitle.setText(buildMonthDayDate().toUpperCase(Locale.getDefault()));
+                    break;
+                default:
+                    mBigTitle.setText(buildMonthTitle().toUpperCase(Locale.getDefault()));
+                    break;
+            }
+            return;
+        }
+
         switch (mCurrentViewType) {
             case CalendarController.ViewType.DAY:
                 mToolbar.setSubtitle(buildDayOfWeek());
@@ -188,6 +222,27 @@ public class CalendarToolbarHandler {
                 DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NO_YEAR
                         | DateUtils.FORMAT_NO_MONTH_DAY, mTimeZone).toString();
         return date;
+    }
+
+    // Same as buildMonthDate(), but appends the year when mMilliTime isn't
+    // in the current year — matches the real app showing just "AUG" for the
+    // current year but "AUG 2025" when browsing another year.
+    private String buildMonthTitle() {
+        Time now = new Time(mTimeZone);
+        now.set(System.currentTimeMillis());
+        Time t = new Time(mTimeZone);
+        t.set(mMilliTime);
+        if (t.getYear() == now.getYear()) {
+            return buildMonthDate();
+        }
+        mStringBuilder.setLength(0);
+        return DateUtils.formatDateRange(
+                mContext,
+                mFormatter,
+                mMilliTime,
+                mMilliTime,
+                DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR
+                        | DateUtils.FORMAT_NO_MONTH_DAY, mTimeZone).toString();
     }
 
     private String buildWeekDate() {

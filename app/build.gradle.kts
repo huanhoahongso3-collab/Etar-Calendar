@@ -111,14 +111,37 @@ android {
 
 }
 
+// OneUI (SESL) design system replaces the stock AndroidX core/appcompat/
+// fragment/preference/material modules app-wide, since they share package
+// namespaces and cannot coexist with their SESL forks on the same classpath.
+// Any transitive pull of the stock modules (via constraintlayout, work,
+// lifecycle, etc.) must be excluded in favor of the sesl.* equivalents below.
+val seslReplacedModules = listOf(
+	"androidx.core" to "core",
+	"androidx.core" to "core-ktx",
+	"androidx.appcompat" to "appcompat",
+	"androidx.fragment" to "fragment",
+	"androidx.preference" to "preference",
+	"androidx.preference" to "preference-ktx",
+	"androidx.recyclerview" to "recyclerview",
+	"androidx.drawerlayout" to "drawerlayout",
+	"androidx.coordinatorlayout" to "coordinatorlayout",
+	"androidx.customview" to "customview",
+	"androidx.slidingpanelayout" to "slidingpanelayout",
+	"androidx.swiperefreshlayout" to "swiperefreshlayout",
+	"com.google.android.material" to "material",
+)
+
+configurations.all {
+	seslReplacedModules.forEach { (group, module) ->
+		exclude(group = group, module = module)
+	}
+}
+
 dependencies {
 
 	// Core
-	implementation(libs.androidx.core)
-	implementation(libs.androidx.preference)
-	implementation(libs.androidx.appcompat)
 	implementation(libs.androidx.constraintlayout)
-	implementation(libs.google.android.material)
     implementation(libs.androidx.work.runtime)
     implementation(libs.androidx.concurrent.futures)
     testImplementation(libs.junit)
@@ -134,4 +157,21 @@ dependencies {
 
 	// lifecycle
 	implementation(libs.androidx.lifecycle.livedata)
+
+	// OneUI design system (Samsung One UI 8 look and feel) — see
+	// https://github.com/tribalfs/oneui-design. Requires GitHub Packages
+	// credentials, see settings.gradle.kts.
+	implementation(libs.oneui.design) {
+		// picker-basic/picker-color/picker-app all declare the same
+		// "androidx.picker" manifest namespace, which trips AGP's unique-
+		// namespace manifest merger check. sesl-appcompat's own resources
+		// (PickerDialog styles) live in picker-basic, so that one must stay;
+		// only the color/app picker dialogs (which Etar doesn't use) are
+		// dropped to resolve the collision.
+		exclude(group = "sesl.androidx.picker", module = "picker-color")
+		exclude(group = "sesl.androidx.picker", module = "picker-app")
+	}
+	implementation(libs.oneui.icons)
+	implementation(libs.bundles.sesl.androidx)
+	implementation(libs.sesl.material)
 }
