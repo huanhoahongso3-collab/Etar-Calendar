@@ -307,6 +307,20 @@ public class MonthByWeekFragment extends SimpleDayPickerFragment implements
 
         if (!mIsMiniMonth) {
             mListView.setBackgroundColor(DynamicThemeKt.getColor(getActivity(), "month_bgcolor"));
+
+            View root = getView();
+            HorizontalMonthSwipeLayout swipeContainer = root == null ? null :
+                    root.findViewById(R.id.month_swipe_container);
+            if (swipeContainer != null) {
+                swipeContainer.setOnMonthSwipeListener(direction -> {
+                    Time target = new Time(mSelectedDay.getTimezone());
+                    target.set(mSelectedDay);
+                    target.setDay(1);
+                    target.setMonth(target.getMonth() + direction);
+                    target.normalize();
+                    goTo(target.toMillis(), true, true, true);
+                });
+            }
         }
 
         // To get a smoother transition when showing this fragment, delay loading of events until

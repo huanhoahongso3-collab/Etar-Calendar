@@ -39,10 +39,17 @@
         android:layout_height="1px"
         android:layout_width="match_parent" />
 
-    <com.android.calendar.month.MonthListView
-        android:id="@android:id/list"
+    <com.android.calendar.month.HorizontalMonthSwipeLayout
+        android:id="@+id/month_swipe_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:drawSelectorOnTop="false" />
+        android:layout_height="match_parent">
+
+        <com.android.calendar.month.MonthListView
+            android:id="@android:id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:drawSelectorOnTop="false" />
+
+    </com.android.calendar.month.HorizontalMonthSwipeLayout>
 
 </LinearLayout>

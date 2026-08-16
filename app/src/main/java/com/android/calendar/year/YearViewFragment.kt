@@ -1,8 +1,10 @@
 package com.android.calendar.year
 
 import android.os.Bundle
+import android.view.GestureDetector
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.GridLayout
@@ -88,6 +90,31 @@ class YearViewFragment() : Fragment(), EventHandler {
         }
         content.addView(grid)
         root.addView(content)
+
+        // Swipe left/right to go to the next/previous year, like the real
+        // app (in addition to the prev/next buttons).
+        val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
+            override fun onFling(
+                e1: MotionEvent?,
+                e2: MotionEvent,
+                velocityX: Float,
+                velocityY: Float
+            ): Boolean {
+                if (e1 == null) return false
+                val dx = e2.x - e1.x
+                val dy = e2.y - e1.y
+                if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 100 && Math.abs(velocityX) > 200) {
+                    if (dx < 0) year++ else year--
+                    buildYear()
+                    return true
+                }
+                return false
+            }
+        })
+        root.setOnTouchListener { _, event ->
+            gestureDetector.onTouchEvent(event)
+            false
+        }
 
         buildYear()
         return root
