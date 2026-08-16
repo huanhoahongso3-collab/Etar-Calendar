@@ -36,7 +36,29 @@
              alertDialogTheme) to pick its own theme overlay, which is what
              gives it rounded corners; without it some dialogs render with
              square AppCompat corners. -->
-        <item name="materialAlertDialogTheme">@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog</item>
+        <item name="materialAlertDialogTheme">@style/OneUiMaterialAlertDialogTheme</item>
+    </style>
+
+    <!-- One UI-styled MaterialAlertDialogBuilder dialogs: larger rounded
+         corners and accent-colored, non-uppercase, bold action buttons
+         instead of Material's default squarer corners / all-caps teal text
+         buttons. -->
+    <style name="OneUiMaterialAlertDialogTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorPrimary">@color/oneui_primary</item>
+        <item name="shapeAppearanceOverlay">@style/OneUiAlertDialogShapeOverlay</item>
+        <item name="buttonBarPositiveButtonStyle">@style/OneUiAlertDialogButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/OneUiAlertDialogButton</item>
+        <item name="buttonBarNeutralButtonStyle">@style/OneUiAlertDialogButton</item>
+    </style>
+
+    <style name="OneUiAlertDialogShapeOverlay">
+        <item name="cornerSize">26dp</item>
+    </style>
+
+    <style name="OneUiAlertDialogButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/oneui_primary</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <!-- Inherit base theme to allow overriding Light Theme as per API levels -->
