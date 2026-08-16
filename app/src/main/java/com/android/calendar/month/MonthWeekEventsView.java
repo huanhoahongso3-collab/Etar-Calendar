@@ -680,6 +680,11 @@ public class MonthWeekEventsView extends SimpleWeekView {
                 mMonthNumPaint.setColor(isFocusMonth ? mMonthNumColor : mMonthNumOtherColor);
             }
             x = computeDayLeftPosition(i - offset) - (mSidePaddingMonthNumber);
+            // One UI's month grid leaves days from adjacent months
+            // completely blank rather than showing them dimmed.
+            if (oneUiStyle && !mFocusDay[i]) {
+                continue;
+            }
             if (isToday && oneUiStyle) {
                 // Small filled rounded-square badge directly behind the
                 // number, matching the real app (confirmed live: today gets

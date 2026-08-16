@@ -46,6 +46,25 @@
         <item name="materialCalendarTheme">@style/ThemeOverlay.MaterialComponents.MaterialCalendar</item>
         <item name="materialCalendarFullscreenTheme">@style/ThemeOverlay.MaterialComponents.MaterialCalendar.Fullscreen</item>
         <item name="materialTimePickerTheme">@style/ThemeOverlay.MaterialComponents.TimePicker</item>
+
+        <!-- Plain framework dialogs (android.app.DatePickerDialog/
+             TimePickerDialog, and any other android.app.AlertDialog-based
+             dialog) default to all-caps "CANCEL"/"OK" buttons in the
+             theme's generic button style — style them to match the OneUI
+             accent-colored, non-uppercase, bold buttons used everywhere
+             else. -->
+        <item name="android:buttonBarPositiveButtonStyle">@style/OneUiFrameworkDialogButton</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/OneUiFrameworkDialogButton</item>
+        <item name="android:buttonBarNeutralButtonStyle">@style/OneUiFrameworkDialogButton</item>
+        <item name="buttonBarPositiveButtonStyle">@style/OneUiFrameworkDialogButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/OneUiFrameworkDialogButton</item>
+        <item name="buttonBarNeutralButtonStyle">@style/OneUiFrameworkDialogButton</item>
+    </style>
+
+    <style name="OneUiFrameworkDialogButton" parent="Widget.AppCompat.Button.Borderless.Colored">
+        <item name="android:textColor">@color/oneui_primary</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <!-- One UI-styled MaterialAlertDialogBuilder dialogs: larger rounded

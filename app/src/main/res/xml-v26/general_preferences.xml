@@ -18,6 +18,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory app:title="@string/preferences_general_title">
         <ListPreference
+            app:key="pref_language"
+            app:title="@string/preferences_language_title"
+            app:entries="@array/pref_language_entries"
+            app:entryValues="@array/pref_language_values"
+            app:defaultValue="" />
+        <ListPreference
             app:key="pref_theme"
             app:title="@string/preferences_theme"
             app:entries="@array/pref_theme_entries"
