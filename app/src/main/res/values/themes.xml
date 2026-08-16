@@ -37,6 +37,15 @@
              gives it rounded corners; without it some dialogs render with
              square AppCompat corners. -->
         <item name="materialAlertDialogTheme">@style/OneUiMaterialAlertDialogTheme</item>
+
+        <!-- Defense-in-depth: we've removed all MaterialDatePicker/
+             MaterialTimePicker usage (replaced with plain framework
+             dialogs, since those require a true MaterialComponents/
+             Material3 ancestor theme and crashed under ours), but set
+             these too in case any future/third-party code path uses them. -->
+        <item name="materialCalendarTheme">@style/ThemeOverlay.MaterialComponents.MaterialCalendar</item>
+        <item name="materialCalendarFullscreenTheme">@style/ThemeOverlay.MaterialComponents.MaterialCalendar.Fullscreen</item>
+        <item name="materialTimePickerTheme">@style/ThemeOverlay.MaterialComponents.TimePicker</item>
     </style>
 
     <!-- One UI-styled MaterialAlertDialogBuilder dialogs: larger rounded

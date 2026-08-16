@@ -27,6 +27,7 @@ import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.AsyncQueryHandler;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -89,9 +90,6 @@ import com.android.calendar.settings.SettingsActivityKt;
 import com.android.calendar.settings.ViewDetailsPreferences;
 import com.android.calendar.theme.DynamicThemeKt;
 import com.android.calendar.calendarcommon2.Time;
-import com.google.android.material.datepicker.CalendarConstraints;
-import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import android.content.res.ColorStateList;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.android.calendar.theme.ThemeUtils;
@@ -1286,35 +1284,24 @@ public class AllInOneActivity extends AbstractCalendarActivity implements EventH
     }
 
     public void goToDate() {
-        MaterialPickerOnPositiveButtonClickListener<Long> materialPickerOnPositiveButtonClickListener = new MaterialPickerOnPositiveButtonClickListener<>() {
-            @Override
-            public void onPositiveButtonClick(Long selection) {
-                Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-                calendar.setTime(new Date(selection));
+        // Plain framework DatePickerDialog instead of MaterialDatePicker:
+        // Material's picker components require a true Theme.MaterialComponents/
+        // Material3 ancestor theme to resolve their internal styles and
+        // crash under our AppCompat/OneUITheme lineage.
+        Calendar now = Calendar.getInstance();
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+                (view, year, month, dayOfMonth) -> {
+                    Time selectedTime = new Time(mTimeZone);
+                    selectedTime.set(System.currentTimeMillis());  // Needed for recalc function in DayView(time + gmtoff)
+                    selectedTime.setYear(year);
+                    selectedTime.setMonth(month);
+                    selectedTime.setDay(dayOfMonth);
 
-                Time selectedTime = new Time(mTimeZone);
-                selectedTime.set(System.currentTimeMillis());  // Needed for recalc function in DayView(time + gmtoff)
-                selectedTime.setYear(calendar.get(Calendar.YEAR));
-                selectedTime.setMonth(calendar.get(Calendar.MONTH));
-                selectedTime.setDay(calendar.get(Calendar.DAY_OF_MONTH));
-
-                long extras = CalendarController.EXTRA_GOTO_TIME | CalendarController.EXTRA_GOTO_DATE;
-                mController.sendEvent(this, EventType.GO_TO, selectedTime, null, selectedTime, -1, ViewType.CURRENT, extras, null, null);
-            }
-        };
-
-        CalendarConstraints calendarConstraints = new CalendarConstraints.Builder()
-                .setFirstDayOfWeek(Utils.getFirstDayOfWeekAsCalendar(this))
-                .build();
-
-        MaterialDatePicker<Long> datePickerDialog = MaterialDatePicker.Builder.datePicker()
-                .setSelection(Calendar.getInstance().getTimeInMillis())
-                .setCalendarConstraints(calendarConstraints)
-                .setTitleText(R.string.goto_date)
-                .build();
-
-        datePickerDialog.addOnPositiveButtonClickListener(materialPickerOnPositiveButtonClickListener);
-        datePickerDialog.show(getSupportFragmentManager(), "GoTo");
+                    long extras = CalendarController.EXTRA_GOTO_TIME | CalendarController.EXTRA_GOTO_DATE;
+                    mController.sendEvent(this, EventType.GO_TO, selectedTime, null, selectedTime, -1, ViewType.CURRENT, extras, null, null);
+                },
+                now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH));
+        datePickerDialog.show();
     }
 
     @Override
