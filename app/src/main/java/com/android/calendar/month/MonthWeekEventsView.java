@@ -756,7 +756,12 @@ public class MonthWeekEventsView extends SimpleWeekView {
         Time time = new Time(mTimeZone);
         time.setJulianDay(julianMonday);
 
+        boolean oneUiStyle = ThemeUtils.isOneUiStyleEnabled(getContext());
         for (; i < numCount; i++) {
+            // Days from adjacent months are left blank entirely under One
+            // UI style — see the matching skip in drawWeekNums().
+            if (oneUiStyle && !mFocusDay[i]) continue;
+
             x = computeDayLeftPosition(i - offset) - (mSidePaddingMonthNumber);
 
             int year = time.getYear();
@@ -1189,16 +1194,26 @@ public class MonthWeekEventsView extends SimpleWeekView {
          * @param boxBoundaries
          */
         public void drawDay(Canvas canvas, DayBoxBoundaries boxBoundaries) {
-            for (FormattedEventBase event : mEventDay) {
-                if (eventShouldBeSkipped(event)) {
+            boolean oneUiStyle = ThemeUtils.isOneUiStyleEnabled(getContext());
+            int focusIndex = mDay + (mShowWeekNum ? 1 : 0);
+            boolean isOtherMonthDay = oneUiStyle && focusIndex >= 0
+                    && focusIndex < mFocusDay.length && !mFocusDay[focusIndex];
+            if (isOtherMonthDay) {
+                for (FormattedEventBase event : mEventDay) {
                     event.skip(mViewPreferences);
-                } else {
-                    event.draw(canvas, mViewPreferences, mDay);
                 }
-            }
-            if (moreLinesWillBeDisplayed()) {
-                int hiddenEvents = mEventsByHeight.get(0).size();
-                drawMoreEvents(canvas, hiddenEvents, boxBoundaries.getX());
+            } else {
+                for (FormattedEventBase event : mEventDay) {
+                    if (eventShouldBeSkipped(event)) {
+                        event.skip(mViewPreferences);
+                    } else {
+                        event.draw(canvas, mViewPreferences, mDay);
+                    }
+                }
+                if (moreLinesWillBeDisplayed()) {
+                    int hiddenEvents = mEventsByHeight.get(0).size();
+                    drawMoreEvents(canvas, hiddenEvents, boxBoundaries.getX());
+                }
             }
             boxBoundaries.nextDay();
         }
