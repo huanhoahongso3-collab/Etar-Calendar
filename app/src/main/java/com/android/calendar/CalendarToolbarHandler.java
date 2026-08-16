@@ -107,7 +107,7 @@ public class CalendarToolbarHandler {
                     mBigTitle.setText(buildMonthDayDate().toUpperCase(Locale.getDefault()));
                     break;
                 default:
-                    mBigTitle.setText(buildMonthDate().toUpperCase(Locale.getDefault()));
+                    mBigTitle.setText(buildMonthTitle().toUpperCase(Locale.getDefault()));
                     break;
             }
             return;
@@ -222,6 +222,27 @@ public class CalendarToolbarHandler {
                 DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NO_YEAR
                         | DateUtils.FORMAT_NO_MONTH_DAY, mTimeZone).toString();
         return date;
+    }
+
+    // Same as buildMonthDate(), but appends the year when mMilliTime isn't
+    // in the current year — matches the real app showing just "AUG" for the
+    // current year but "AUG 2025" when browsing another year.
+    private String buildMonthTitle() {
+        Time now = new Time(mTimeZone);
+        now.set(System.currentTimeMillis());
+        Time t = new Time(mTimeZone);
+        t.set(mMilliTime);
+        if (t.getYear() == now.getYear()) {
+            return buildMonthDate();
+        }
+        mStringBuilder.setLength(0);
+        return DateUtils.formatDateRange(
+                mContext,
+                mFormatter,
+                mMilliTime,
+                mMilliTime,
+                DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR
+                        | DateUtils.FORMAT_NO_MONTH_DAY, mTimeZone).toString();
     }
 
     private String buildWeekDate() {

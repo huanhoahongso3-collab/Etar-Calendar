@@ -758,11 +758,11 @@ public class MonthWeekEventsView extends SimpleWeekView {
                 if (!TextUtils.isEmpty(lunarLabel)) {
                     float originalTextSize = mMonthNumPaint.getTextSize();
                     mMonthNumPaint.setTextSize(mTextSizeLunar);
-                    // Always place the lunar label beside the day number
-                    // (same row), never below it — below is where events
-                    // start, and the two would otherwise overlap.
-                    int infoX = x - mMonthNumHeight - mTopPaddingMonthNumber;
-                    int infoY = y;
+                    // Directly below the day number, matching the real app.
+                    // DayBoxBoundaries reserves this exact row so events
+                    // never start until below it.
+                    int infoX = x;
+                    int infoY = y + mMonthNumHeight + mLunarPaddingLunar;
                     canvas.drawText(lunarLabel, infoX, infoY, mMonthNumPaint);
 
                     // restore the text size.
@@ -1375,6 +1375,13 @@ public class MonthWeekEventsView extends SimpleWeekView {
             mYOffset = 0;
             mX = 1;
             mY = mEventYOffsetPortrait + mMonthNumHeight + mTopPaddingMonthNumber;
+            if (VietnameseLunarUtils.isEnabled(getContext())) {
+                // Reserve a row below the day number for the lunar date
+                // (matches the offset the lunar label is actually drawn at
+                // in drawLunarLabels()), so events always start below it
+                // instead of overlapping it.
+                mY += mMonthNumHeight + mLunarPaddingLunar;
+            }
             mRightEdge = - 1;
         }
 
