@@ -8,7 +8,7 @@
     <color name="oneui_today_circle">#fcfcff</color>
     <color name="oneui_today_number_text">#fcfcff</color>
     <color name="oneui_fab_background">#2c2c30</color>
-    <color name="oneui_fab_icon">#ffab5c</color>
+    <color name="oneui_fab_icon">@color/oneui_primary</color>
     <color name="oneui_weekend_text">#ff7a72</color>
 
 </resources>

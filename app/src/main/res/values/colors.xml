@@ -34,7 +34,7 @@
     <color name="oneui_today_circle">#010102</color>
     <color name="oneui_today_number_text">#010102</color>
     <color name="oneui_fab_background">#e6e6ea</color>
-    <color name="oneui_fab_icon">#ff8a3d</color>
+    <color name="oneui_fab_icon">@color/oneui_primary</color>
     <!-- Sunday header + date number color, matching the real app's default
          (Saturday stays the normal weekday color there). -->
     <color name="oneui_weekend_text">#d93e36</color>

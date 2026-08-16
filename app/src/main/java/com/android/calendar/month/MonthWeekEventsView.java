@@ -702,7 +702,10 @@ public class MonthWeekEventsView extends SimpleWeekView {
                 }
             }
 
-            if (VietnameseLunarUtils.isEnabled(getContext())) {
+            int eventDayIndex = i - offset;
+            boolean dayHasEvents = mEvents != null && eventDayIndex >= 0
+                    && eventDayIndex < mEvents.size() && !mEvents.get(eventDayIndex).isEmpty();
+            if (VietnameseLunarUtils.isEnabled(getContext()) && !dayHasEvents) {
                 String lunarLabel = VietnameseLunarUtils.getShortLunarLabel(year, month, monthDay);
                 if (!TextUtils.isEmpty(lunarLabel)) {
                     float originalTextSize = mMonthNumPaint.getTextSize();
