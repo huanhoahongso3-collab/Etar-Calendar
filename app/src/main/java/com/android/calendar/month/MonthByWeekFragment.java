@@ -312,14 +312,7 @@ public class MonthByWeekFragment extends SimpleDayPickerFragment implements
             HorizontalMonthSwipeLayout swipeContainer = root == null ? null :
                     root.findViewById(R.id.month_swipe_container);
             if (swipeContainer != null) {
-                swipeContainer.setOnMonthSwipeListener(direction -> {
-                    Time target = new Time(mSelectedDay.getTimezone());
-                    target.set(mSelectedDay);
-                    target.setDay(1);
-                    target.setMonth(target.getMonth() + direction);
-                    target.normalize();
-                    goTo(target.toMillis(), true, true, true);
-                });
+                swipeContainer.setOnMonthSwipeListener(direction -> animateMonthSwipe(direction));
             }
         }
 
@@ -334,6 +327,33 @@ public class MonthByWeekFragment extends SimpleDayPickerFragment implements
             }
         }
         mAdapter.setListView(mListView);
+    }
+
+    /**
+     * Slides the current month out and the target month in horizontally,
+     * matching One UI's per-month paging — instead of goTo()'s built-in
+     * "animate" flag, which does the old vertical smooth-scroll-through-
+     * weeks animation and would visually reveal other months mid-transition.
+     *
+     * @param direction -1 for the previous month, +1 for the next month.
+     */
+    private void animateMonthSwipe(final int direction) {
+        if (mListView == null || mListView.getWidth() == 0) return;
+        final float width = mListView.getWidth();
+        final float outX = direction > 0 ? -width : width;
+
+        mListView.animate().translationX(outX).setDuration(150).withEndAction(() -> {
+            Time target = new Time(mSelectedDay.getTimezone());
+            target.set(mSelectedDay);
+            target.setDay(1);
+            target.setMonth(target.getMonth() + direction);
+            target.normalize();
+            // animate=false: snap directly, no vertical scroll-through.
+            goTo(target.toMillis(), false, true, true);
+
+            mListView.setTranslationX(-outX);
+            mListView.animate().translationX(0).setDuration(150).withEndAction(null).start();
+        }).start();
     }
 
     @Override
