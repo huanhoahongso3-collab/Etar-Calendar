@@ -2689,6 +2689,24 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
             p.setColor(mCalendarGridLineInnerVerticalColor);
         }
 
+        // One UI's grid also has a dotted half-hour line between each pair
+        // of solid hour lines.
+        if (ThemeUtils.isOneUiStyleEnabled(mContext)) {
+            android.graphics.PathEffect savedEffect = p.getPathEffect();
+            boolean savedAntiAlias = p.isAntiAlias();
+            float dot = mScale * 2f;
+            p.setColor(mCalendarGridLineInnerHorizontalColor);
+            p.setPathEffect(new android.graphics.DashPathEffect(new float[]{dot, dot}, 0));
+            p.setAntiAlias(true);
+            float halfY = deltaY / 2f;
+            for (int hour = 0; hour < 24; hour++) {
+                canvas.drawLine(GRID_LINE_LEFT_MARGIN, halfY, stopX, halfY, p);
+                halfY += deltaY;
+            }
+            p.setPathEffect(savedEffect);
+            p.setAntiAlias(savedAntiAlias);
+        }
+
         // Draw the inner vertical grid lines
         for (int day = 0; day <= mNumDays; day++) {
             x = computeDayLeftPosition(day);
