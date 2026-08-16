@@ -468,6 +468,7 @@ public class MonthWeekEventsView extends SimpleWeekView {
             }
             drawDNA(canvas);
         }
+        drawLunarLabels(canvas);
         drawClick(canvas);
     }
 
@@ -702,10 +703,57 @@ public class MonthWeekEventsView extends SimpleWeekView {
                 }
             }
 
-            int eventDayIndex = i - offset;
-            boolean dayHasEvents = mEvents != null && eventDayIndex >= 0
-                    && eventDayIndex < mEvents.size() && !mEvents.get(eventDayIndex).isEmpty();
-            if (VietnameseLunarUtils.isEnabled(getContext()) && !dayHasEvents) {
+        }
+    }
+
+    // Lunar date labels are drawn in a separate pass, after drawEvents(), so
+    // that events (drawn later in onDraw) never paint over/hide them.
+    protected void drawLunarLabels(Canvas canvas) {
+        boolean showVietnamese = VietnameseLunarUtils.isEnabled(getContext());
+        boolean showChinese = LunarUtils.showLunar(getContext());
+        if (!showVietnamese && !showChinese) return;
+
+        int i = 0;
+        int offset = -1;
+        int x;
+        int numCount = mNumDays;
+        if (mShowWeekNum) {
+            numCount++;
+            i++;
+            offset++;
+        }
+
+        int y = mMonthNumAscentHeight + mTopPaddingMonthNumber;
+
+        int julianMonday = Utils.getJulianMondayFromWeeksSinceEpoch(mWeek);
+        Time time = new Time(mTimeZone);
+        time.setJulianDay(julianMonday);
+
+        for (; i < numCount; i++) {
+            x = computeDayLeftPosition(i - offset) - (mSidePaddingMonthNumber);
+
+            int year = time.getYear();
+            int month = time.getMonth();
+            int julianMondayDay = time.getDay();
+            int monthDay = Integer.parseInt(mDayNumbers[i]);
+            if (monthDay != julianMondayDay) {
+                int offsetDay = monthDay - julianMondayDay;
+                if (offsetDay > 6) {
+                    month = month - 1;
+                    if (month < 0) {
+                        month = 11;
+                        year = year - 1;
+                    }
+                } else if (offsetDay < -6) {
+                    month = month + 1;
+                    if (month > 11) {
+                        month = 0;
+                        year = year + 1;
+                    }
+                }
+            }
+
+            if (showVietnamese) {
                 String lunarLabel = VietnameseLunarUtils.getShortLunarLabel(year, month, monthDay);
                 if (!TextUtils.isEmpty(lunarLabel)) {
                     float originalTextSize = mMonthNumPaint.getTextSize();
@@ -727,7 +775,7 @@ public class MonthWeekEventsView extends SimpleWeekView {
                     // restore the text size.
                     mMonthNumPaint.setTextSize(originalTextSize);
                 }
-            } else if (LunarUtils.showLunar(getContext())) {
+            } else {
                 ArrayList<String> infos = new ArrayList<String>();
                 LunarUtils.get(getContext(), year, month, monthDay,
                         LunarUtils.FORMAT_LUNAR_SHORT | LunarUtils.FORMAT_MULTI_FESTIVAL, false,
