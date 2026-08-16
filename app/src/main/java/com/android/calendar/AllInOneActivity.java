@@ -493,6 +493,11 @@ public class AllInOneActivity extends AbstractCalendarActivity implements EventH
         mToolbar = binding.toolbar;
 
         if (!mIsTabletConfig) {
+            // Without an explicit title, AppCompat's ActionBar defaults the
+            // Toolbar's title to the activity's manifest label ("Etar"),
+            // which showed up duplicated alongside the big month/day title
+            // below it.
+            mToolbar.setTitle("");
             mCalendarToolbarHandler = new CalendarToolbarHandler(this, mToolbar,
                     binding.monthTitleBig, viewType);
         } else {
