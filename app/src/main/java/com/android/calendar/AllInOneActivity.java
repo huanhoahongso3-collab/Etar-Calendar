@@ -999,7 +999,9 @@ public class AllInOneActivity extends AbstractCalendarActivity implements EventH
                 mController.sendEvent(this, EventType.GO_TO, null, null, -1, ViewType.AGENDA);
             }
         } else if (itemId == R.id.year_menu_item) {
-            startActivity(new Intent(this, com.android.calendar.year.YearViewActivity.class));
+            if (mCurrentView != ViewType.YEAR) {
+                mController.sendEvent(this, EventType.GO_TO, null, null, -1, ViewType.YEAR);
+            }
         } else if (itemId == R.id.action_settings) {
             mController.sendEvent(this, EventType.LAUNCH_SETTINGS, null, null, 0, 0);
         } else if (itemId == R.id.action_about) {
@@ -1102,6 +1104,13 @@ public class AllInOneActivity extends AbstractCalendarActivity implements EventH
                 }
                 if (mIsTabletConfig) {
                     mToolbar.setTitle(R.string.month_view);
+                }
+                break;
+            case ViewType.YEAR:
+                mNavigationView.getMenu().findItem(R.id.year_menu_item).setChecked(true);
+                frag = new com.android.calendar.year.YearViewFragment(timeMillis);
+                if (mIsTabletConfig) {
+                    mToolbar.setTitle(R.string.year_view);
                 }
                 break;
             case ViewType.WEEK:

@@ -91,6 +91,14 @@ public class CalendarToolbarHandler {
 
     private void updateTitle() {
         if (mBigTitle != null) {
+            if (mCurrentViewType == CalendarController.ViewType.YEAR) {
+                // YearViewFragment shows its own year label + prev/next row;
+                // the shared big title would just be a redundant/incorrect
+                // month name on top of it.
+                mBigTitle.setVisibility(android.view.View.GONE);
+                return;
+            }
+            mBigTitle.setVisibility(android.view.View.VISIBLE);
             // One UI shows a big, short, uppercase title (e.g. "AUG", "16")
             // on its own row instead of the toolbar's inline title/subtitle.
             switch (mCurrentViewType) {

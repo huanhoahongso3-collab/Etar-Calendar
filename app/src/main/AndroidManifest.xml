@@ -98,10 +98,6 @@
         <activity android:name="com.android.calendar.AboutActivity">
         </activity>
 
-        <activity android:name="com.android.calendar.year.YearViewActivity"
-            android:parentActivityName="com.android.calendar.AllInOneActivity">
-        </activity>
-
         <activity android:name="com.android.calendar.EventInfoActivity"
             android:exported="true"
             android:parentActivityName="com.android.calendar.AllInOneActivity">
