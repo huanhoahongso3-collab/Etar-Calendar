@@ -31,6 +31,12 @@
         <item name="colorOnSecondary">@android:color/white</item>
         <item name="colorError">#ffb4ab</item>
         <item name="colorOnError">#690005</item>
+
+        <!-- MaterialAlertDialogBuilder reads this attr (not
+             alertDialogTheme) to pick its own theme overlay, which is what
+             gives it rounded corners; without it some dialogs render with
+             square AppCompat corners. -->
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog</item>
     </style>
 
     <!-- Inherit base theme to allow overriding Light Theme as per API levels -->

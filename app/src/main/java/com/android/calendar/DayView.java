@@ -2560,9 +2560,9 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
         int todayIndex = mTodayJulianDay - mFirstJulianDay;
         // Draw day of the month
         String dateNumStr = String.valueOf(dateNum);
+        boolean showAnyLunar = VietnameseLunarUtils.isEnabled(mContext) || LunarUtils.showLunar(mContext);
         if (mNumDays > 1) {
             float y = -1;
-            boolean showAnyLunar = VietnameseLunarUtils.isEnabled(mContext) || LunarUtils.showLunar(mContext);
             if (showAnyLunar) {
                 y = DAY_HEADER_HEIGHT - DAY_HEADER_BOTTOM_MARGIN - DATE_HEADER_FONT_SIZE - 2;
             } else {
@@ -2624,6 +2624,38 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
             p.setTextSize(DATE_HEADER_FONT_SIZE);
             p.setTypeface(todayIndex == day ? mBold : Typeface.DEFAULT);
             canvas.drawText(dateNumStr, x, y, p);
+
+            // Show the lunar date next to the day header, single-day view.
+            if (showAnyLunar) {
+                int month = mBaseDate.getMonth();
+                int year = mBaseDate.getYear();
+                if (dateNum > mMonthLength || dateNum < mFirstVisibleDate) {
+                    month = month + 1;
+                    if (month > 11) {
+                        month = 0;
+                        year = year + 1;
+                    }
+                }
+
+                String lunarInfo;
+                if (VietnameseLunarUtils.isEnabled(mContext)) {
+                    lunarInfo = VietnameseLunarUtils.getShortLunarLabel(year, month, dateNum);
+                } else {
+                    lunarInfo = LunarUtils.get(mContext, year, month, dateNum,
+                            LunarUtils.FORMAT_LUNAR_SHORT | LunarUtils.FORMAT_ONE_FESTIVAL,
+                            false, null);
+                }
+                if (!TextUtils.isEmpty(lunarInfo)) {
+                    x += p.measureText(dateNumStr) + DAY_HEADER_ONE_DAY_RIGHT_MARGIN;
+                    float originalTextSize = p.getTextSize();
+                    Typeface originalTypeface = p.getTypeface();
+                    p.setTextSize(DAY_HEADER_FONT_SIZE);
+                    p.setTypeface(Typeface.DEFAULT);
+                    canvas.drawText(lunarInfo, x, y, p);
+                    p.setTextSize(originalTextSize);
+                    p.setTypeface(originalTypeface);
+                }
+            }
         }
     }
 
