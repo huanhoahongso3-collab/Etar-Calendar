@@ -1948,6 +1948,14 @@ public class MonthWeekEventsView extends SimpleWeekView {
         if (dayPosition == -1) {
             return null;
         }
+        if (ThemeUtils.isOneUiStyleEnabled(getContext())) {
+            int focusIndex = dayPosition + (mShowWeekNum ? 1 : 0);
+            if (focusIndex >= 0 && focusIndex < mFocusDay.length && !mFocusDay[focusIndex]) {
+                // Under One UI style, adjacent-month day cells are blank and
+                // must not be tappable/selectable.
+                return null;
+            }
+        }
         int day = mFirstJulianDay + dayPosition;
 
         Time time = new Time(mTimeZone);

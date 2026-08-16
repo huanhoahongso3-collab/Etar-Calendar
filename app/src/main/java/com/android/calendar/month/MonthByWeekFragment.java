@@ -35,6 +35,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewConfiguration;
+import android.view.animation.DecelerateInterpolator;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -312,7 +313,30 @@ public class MonthByWeekFragment extends SimpleDayPickerFragment implements
             HorizontalMonthSwipeLayout swipeContainer = root == null ? null :
                     root.findViewById(R.id.month_swipe_container);
             if (swipeContainer != null) {
-                swipeContainer.setOnMonthSwipeListener(direction -> animateMonthSwipe(direction));
+                swipeContainer.setOnMonthSwipeListener(
+                        new HorizontalMonthSwipeLayout.OnMonthSwipeListener() {
+                            @Override
+                            public void onMonthSwipe(int direction) {
+                                animateMonthSwipe(direction);
+                            }
+
+                            @Override
+                            public void onMonthSwipeProgress(float dx) {
+                                if (mListView != null) {
+                                    mListView.setTranslationX(dx);
+                                }
+                            }
+
+                            @Override
+                            public void onMonthSwipeCancelled() {
+                                if (mListView != null) {
+                                    mListView.animate().translationX(0)
+                                            .setDuration(200)
+                                            .setInterpolator(new DecelerateInterpolator())
+                                            .start();
+                                }
+                            }
+                        });
             }
         }
 
@@ -341,8 +365,16 @@ public class MonthByWeekFragment extends SimpleDayPickerFragment implements
         if (mListView == null || mListView.getWidth() == 0) return;
         final float width = mListView.getWidth();
         final float outX = direction > 0 ? -width : width;
+        // Continue smoothly from wherever the live drag left the view
+        // (onMonthSwipeProgress), rather than snapping back to 0 first —
+        // that snap-then-slide was the source of the "not smooth" jump cut.
+        final float current = mListView.getTranslationX();
+        final long duration = (long) (220 * (1f - Math.abs(current) / width));
 
-        mListView.animate().translationX(outX).setDuration(150).withEndAction(() -> {
+        mListView.animate().translationX(outX)
+                .setDuration(Math.max(duration, 80))
+                .setInterpolator(new DecelerateInterpolator())
+                .withEndAction(() -> {
             Time target = new Time(mSelectedDay.getTimezone());
             target.set(mSelectedDay);
             target.setDay(1);
@@ -352,7 +384,9 @@ public class MonthByWeekFragment extends SimpleDayPickerFragment implements
             goTo(target.toMillis(), false, true, true);
 
             mListView.setTranslationX(-outX);
-            mListView.animate().translationX(0).setDuration(150).withEndAction(null).start();
+            mListView.animate().translationX(0).setDuration(220)
+                    .setInterpolator(new DecelerateInterpolator())
+                    .withEndAction(null).start();
         }).start();
     }
 

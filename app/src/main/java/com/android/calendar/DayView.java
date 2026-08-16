@@ -760,7 +760,7 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
 
         HOURS_MARGIN = HOURS_LEFT_MARGIN + HOURS_RIGHT_MARGIN;
         DAY_HEADER_HEIGHT = mNumDays == 1 ? ONE_DAY_HEADER_HEIGHT : MULTI_DAY_HEADER_HEIGHT;
-        if ((VietnameseLunarUtils.isEnabled(mContext) || LunarUtils.showLunar(mContext)) && mNumDays != 1) {
+        if (VietnameseLunarUtils.isEnabled(mContext) || LunarUtils.showLunar(mContext)) {
             DAY_HEADER_HEIGHT = (int) (DAY_HEADER_HEIGHT + DAY_HEADER_FONT_SIZE + 2);
         }
 
@@ -2610,6 +2610,10 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
                 }
             }
         } else {
+            // When lunar is on, the header grew by DAY_HEADER_FONT_SIZE + 2
+            // (see the DAY_HEADER_HEIGHT setup) — reserve that extra space
+            // below the date/weekday row for the lunar label instead of
+            // squeezing it in beside the date.
             float y = ONE_DAY_HEADER_HEIGHT - DAY_HEADER_ONE_DAY_BOTTOM_MARGIN;
             p.setTextAlign(Align.LEFT);
 
@@ -2621,12 +2625,12 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
             canvas.drawText(dayStr, x, y, p);
 
             // Draw day of the month
-            x += p.measureText(dayStr) + DAY_HEADER_ONE_DAY_RIGHT_MARGIN;
+            float dateX = x + p.measureText(dayStr) + DAY_HEADER_ONE_DAY_RIGHT_MARGIN;
             p.setTextSize(DATE_HEADER_FONT_SIZE);
             p.setTypeface(todayIndex == day ? mBold : Typeface.DEFAULT);
-            canvas.drawText(dateNumStr, x, y, p);
+            canvas.drawText(dateNumStr, dateX, y, p);
 
-            // Show the lunar date next to the day header, single-day view.
+            // Show the lunar date under the day header, single-day view.
             if (showAnyLunar) {
                 int month = mBaseDate.getMonth();
                 int year = mBaseDate.getYear();
@@ -2647,12 +2651,11 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
                             false, null);
                 }
                 if (!TextUtils.isEmpty(lunarInfo)) {
-                    x += p.measureText(dateNumStr) + DAY_HEADER_ONE_DAY_RIGHT_MARGIN;
                     float originalTextSize = p.getTextSize();
                     Typeface originalTypeface = p.getTypeface();
                     p.setTextSize(DAY_HEADER_FONT_SIZE);
                     p.setTypeface(Typeface.DEFAULT);
-                    canvas.drawText(lunarInfo, x, y, p);
+                    canvas.drawText(lunarInfo, x, y + DAY_HEADER_FONT_SIZE + 2, p);
                     p.setTextSize(originalTextSize);
                     p.setTypeface(originalTypeface);
                 }

@@ -19,6 +19,14 @@ public class HorizontalMonthSwipeLayout extends FrameLayout {
     /** Callback for a recognized horizontal swipe. direction: -1 = previous, +1 = next. */
     public interface OnMonthSwipeListener {
         void onMonthSwipe(int direction);
+
+        /** Called continuously while dragging so the caller can translate the
+         *  content live under the finger, like a real page swipe. */
+        default void onMonthSwipeProgress(float dx) {}
+
+        /** Called on release when no swipe threshold was reached, so the
+         *  caller can animate the content back to rest. */
+        default void onMonthSwipeCancelled() {}
     }
 
     private final int mTouchSlop;
@@ -70,6 +78,11 @@ public class HorizontalMonthSwipeLayout extends FrameLayout {
     public boolean onTouchEvent(MotionEvent ev) {
         if (!mIntercepting) return false;
         switch (ev.getActionMasked()) {
+            case MotionEvent.ACTION_MOVE:
+                if (mListener != null) {
+                    mListener.onMonthSwipeProgress(ev.getX() - mDownX);
+                }
+                break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
                 if (!mHandledSwipe) {
@@ -84,6 +97,8 @@ public class HorizontalMonthSwipeLayout extends FrameLayout {
                             && mListener != null) {
                         mListener.onMonthSwipe(dx < 0 ? 1 : -1);
                         mHandledSwipe = true;
+                    } else if (mListener != null) {
+                        mListener.onMonthSwipeCancelled();
                     }
                 }
                 mIntercepting = false;
